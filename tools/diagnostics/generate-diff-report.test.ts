@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { it } from "vitest";
-import { parseJahisRx } from "../src/index.js";
+import { parseJahisRx } from "../../src/index.js";
 
 // This test is a diagnostic runner that prints a diff-like report for
 // drug-related sample records (201, 211, 221, 241). It's intended to be
@@ -9,7 +9,7 @@ import { parseJahisRx } from "../src/index.js";
 // raw sample fields.
 
 function loadSamples(): string[] {
-  const p = path.join(__dirname, "spec-samples.test.ts");
+  const p = path.join(process.cwd(), "test", "spec-samples.test.ts");
   const src = fs.readFileSync(p, "utf8");
   const m = src.match(/const SAMPLES\s*=\s*\[([\s\S]*?)\];/m);
   if (!m) throw new Error("SAMPLES not found in spec-samples.test.ts");

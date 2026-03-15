@@ -1,10 +1,10 @@
 import fs from "fs";
 import path from "path";
 import { it } from "vitest";
-import { parseJahisRx } from "../src/index.js";
+import { parseJahisRx } from "../../src/index.js";
 
 function loadSamples(): string[] {
-  const p = path.join(__dirname, "spec-samples.test.ts");
+  const p = path.join(process.cwd(), "test", "spec-samples.test.ts");
   const src = fs.readFileSync(p, "utf8");
   const m = src.match(/const SAMPLES\s*=\s*\[([\s\S]*?)\];/m);
   if (!m) throw new Error("SAMPLES not found in spec-samples.test.ts");
