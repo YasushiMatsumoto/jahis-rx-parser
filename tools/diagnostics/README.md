@@ -1,35 +1,41 @@
-# Diagnostics
+# Diagnostics（診断スクリプト）
 
-This folder contains developer diagnostic scripts for investigating parsing/normalization details. These scripts are not run as part of normal CI or `npm test`.
+このフォルダには、開発者向けの診断スクリプトが置かれています。これらは通常の CI／`npm test` では実行されない想定のツール群で、パーサーや正規化の挙動を手動で検査するために使います。
 
-Purpose
-- Provide ad-hoc tools to inspect how sample records map to the normalized output.
-- Produce developer artifacts (for example `test/expected-normalized.json`) used when generating or reviewing canonical outputs.
+目的
+- サンプルレコードが正規化出力にどのようにマッピングされているかを手動で確認する。
+- 正規化の差分や疑わしいケースを抽出するための補助的なツールを提供する。
+- `test/expected-normalized.json` のような開発用アーティファクトを生成する（手動レビュー後にコミットすることを想定）。
 
-Files
-- `generate-diff-report.test.ts` — prints per-sample field → normalized property matches for drug-related samples (201/211/221/241).
-- `extract-issues.test.ts` — heuristic scanner that lists sample fields not found in common normalized drug props.
-- `auto-prioritize-issues.test.ts` — stricter heuristics that surface high-confidence mismatch candidates.
-- `generate-expected-normalized.test.ts` — generates `test/expected-normalized.json` (canonicalized normalized output for all hardcoded samples).
-- `expected-normalized.json` — output artifact (may be large); review before committing.
+ファイル一覧（主なもの）
+- `generate-diff-report.test.ts` — 薬剤レコード（201/211/221/241）について、サンプルフィールドと正規化出力の簡易マッチを表示します。
+- `extract-issues.test.ts` — 正規化出力に現れないサンプルフィールドをヒューリスティックに列挙します。
+- `auto-prioritize-issues.test.ts` — より厳格なルールで高確度の不一致候補を抽出します。
+- `generate-expected-normalized.test.ts` — 全サンプルをパースして正規化結果を正規化（undefined→null、キーソート等）し、`test/expected-normalized.json` を生成します。
+- `expected-normalized.json` — 生成済みの出力アーティファクト（大きくなる可能性あり）。生成後にレビューしてからコミットしてください。
 
-How to run
+実行方法
 
-Run diagnostics manually (they are excluded from normal test runs):
+診断スクリプトは手動で実行します。プロジェクトルートから次のコマンドを使ってください：
 
 ```powershell
 npm run diagnostics
 ```
 
-This runs the diagnostic suite using Vitest and prints results to the console. `generate-expected-normalized.test.ts` writes `test/expected-normalized.json` into the `test/` folder.
+- `npm run diagnostics` は `vitest` を使って `tools/diagnostics` 下のスクリプトを実行します。
+- `generate-expected-normalized.test.ts` を実行すると `test/expected-normalized.json` が上書きされます。
 
-Notes and recommendations
-- These scripts are for developers and intentionally bypass some CI constraints. Keep them under `tools/diagnostics/` to avoid polluting CI.
-- If you want ESLint/TypeScript to include these files, add them to your `tsconfig.json` and update `eslint.config.mjs` accordingly. Default project config currently ignores this folder.
-- Before committing `expected-normalized.json`, review it for sensitive data. The repository previously used anonymized fixtures; keep that practice for any generated sample outputs.
+注意点
+- これらは開発用スクリプトです。CI のテストスイートに混ぜないために `tools/diagnostics/` に配置しています。
+- 生成される `expected-normalized.json` をコミットする前に、個人情報や機密の残りがないか必ず確認してください。既にリポジトリでは外部データを匿名化する措置が取られていますが、生成物も同様に確認が必要です。
+- ESLint/TypeScript の設定でこのフォルダを無視するように `eslint.config.mjs` を更新しています。もし診断スクリプトも型チェック／lint 対象に含めたい場合は `tsconfig.json` と ESLint 設定を調整してください。
 
-Troubleshooting
-- If `npm run diagnostics` fails with TypeScript/ESLint parser errors, ensure `eslint.config.mjs` contains `tools/diagnostics/**` in the `ignores` list (this repo already configures this).
+トラブルシューティング
+- `npm run diagnostics` 実行時に TypeScript 関連のパーサエラーが出る場合：`eslint.config.mjs` の `ignores` に `tools/diagnostics/**` が含まれているか確認してください（このリポジトリでは既に設定済みです）。
+- 生成結果が期待と違う場合は、まず `spec-samples.test.ts` のアンカー（ヘッダやダミー院情報）を確認してください。サンプルは最小のコンテキストで正規化されるようアンカーを付与してあります。
 
-Contact
-- For any questions about these scripts, open an issue or contact the maintainer.
+コントリビュートのヒント
+- 診断スクリプトを改善したら、tools/diagnostics にだけ変更を加え、必ず出力を手動で確認してから `test/expected-normalized.json` を更新・コミットしてください。
+
+質問・連絡
+- 使い方が分からない、あるいは診断結果の見方がわからない場合は Issue を上げてください。
