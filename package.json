@@ -1,0 +1,77 @@
+{
+  "name": "jahis-rx-parser",
+  "version": "0.1.0",
+  "description": "Parser for JAHIS outpatient prescription QR text",
+  "keywords": [
+    "jahis",
+    "prescription",
+    "rx",
+    "parser",
+    "qr",
+    "medical"
+  ],
+  "license": "MIT",
+  "author": "Yasushi Matsumoto",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YasushiMatsumoto/jahis-rx-parser.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YasushiMatsumoto/jahis-rx-parser/issues"
+  },
+  "homepage": "https://github.com/YasushiMatsumoto/jahis-rx-parser#readme",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "clean": "rimraf dist coverage",
+    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:external": "vitest run test/external-data.dynamic.test.ts",
+    "test:browser": "vitest run --environment happy-dom",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run test:browser",
+    "prepack": "npm run clean && npm run build && npm run check"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.37.0",
+    "@types/node": "^25.3.5",
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
+    "@vitest/coverage-v8": "^4.0.18",
+    "eslint": "^9.37.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "globals": "^16.4.0",
+    "happy-dom": "^20.8.3",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.1.3",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}
