@@ -102,7 +102,10 @@ it("generate diff report for drug-related samples (diagnostic)", () => {
         // also try loose numeric compare
         const num = f.replace(/，/g, ",");
         const numericMatch = checkProps.find((p) => p.path == num);
-        if (numericMatch) console.log(`  field[${i}]='${f}' => matches normalized.${numericMatch.key} (after looser compare)`);
+        if (numericMatch)
+          console.log(
+            `  field[${i}]='${f}' => matches normalized.${numericMatch.key} (after looser compare)`,
+          );
         else console.log(`  field[${i}]='${f}' => NO MATCH in common drug props`);
       }
     });
@@ -110,11 +113,17 @@ it("generate diff report for drug-related samples (diagnostic)", () => {
     // unit-conversion and uneven dosing inspection for 211/221/241
     if (sample.startsWith("211") || sample.startsWith("241") || sample.startsWith("221")) {
       console.log("\nadditional normalized drug details:");
-      console.log(JSON.stringify({
-        unitConversions: drug?.unitConversions ?? null,
-        unevenDosings: drug?.unevenDosings ?? null,
-        singleDoseAmounts: drug?.singleDoseAmounts ?? null,
-      }, null, 2));
+      console.log(
+        JSON.stringify(
+          {
+            unitConversions: drug?.unitConversions ?? null,
+            unevenDosings: drug?.unevenDosings ?? null,
+            singleDoseAmounts: drug?.singleDoseAmounts ?? null,
+          },
+          null,
+          2,
+        ),
+      );
     }
   }
 

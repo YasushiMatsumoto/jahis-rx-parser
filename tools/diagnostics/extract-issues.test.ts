@@ -56,20 +56,23 @@ function flattenNormalizedDrugProps(drug: any) {
   push(drug.potencyFlag);
   if (drug.unitConversions) push(drug.unitConversions.map((u: any) => u.convertedAmount));
   if (drug.unevenDosings) {
-    push(drug.unevenDosings.map((ud: any) => [
-      ud.unevenDosingAmount1,
-      ud.unevenDosingAmount2,
-      ud.unevenDosingAmount3,
-      ud.unevenDosingAmount4,
-      ud.unevenDosingAmount5,
-      ud.unevenDosingCode1,
-      ud.unevenDosingCode2,
-      ud.unevenDosingCode3,
-      ud.unevenDosingCode4,
-      ud.unevenDosingCode5,
-    ]));
+    push(
+      drug.unevenDosings.map((ud: any) => [
+        ud.unevenDosingAmount1,
+        ud.unevenDosingAmount2,
+        ud.unevenDosingAmount3,
+        ud.unevenDosingAmount4,
+        ud.unevenDosingAmount5,
+        ud.unevenDosingCode1,
+        ud.unevenDosingCode2,
+        ud.unevenDosingCode3,
+        ud.unevenDosingCode4,
+        ud.unevenDosingCode5,
+      ]),
+    );
   }
-  if (drug.singleDoseAmounts) push(drug.singleDoseAmounts.map((s: any) => [s.singleDoseAmount, s.timesPerDay]));
+  if (drug.singleDoseAmounts)
+    push(drug.singleDoseAmounts.map((s: any) => [s.singleDoseAmount, s.timesPerDay]));
   return vals.map((v) => v ?? "");
 }
 
@@ -122,7 +125,9 @@ it("extract possible issues from drug-related samples (diagnostic)", () => {
       const sda = drug?.singleDoseAmounts?.[0]?.singleDoseAmount ?? null;
       const times = drug?.singleDoseAmounts?.[0]?.timesPerDay ?? null;
       if (!isEmpty(expectedAmount) && String(sda) !== expectedAmount) {
-        problems.push(`241 singleDoseAmount mismatch: expected='${expectedAmount}' actual='${sda}'`);
+        problems.push(
+          `241 singleDoseAmount mismatch: expected='${expectedAmount}' actual='${sda}'`,
+        );
       }
       if (!isEmpty(expectedTimes) && String(times) !== expectedTimes) {
         problems.push(`241 timesPerDay mismatch: expected='${expectedTimes}' actual='${times}'`);
