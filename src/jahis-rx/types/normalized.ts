@@ -1,7 +1,7 @@
 /**
  * Unsupported record preserved in normalized output for inspection.
  */
-export interface UnknownNormalizedRecord {
+export interface UnknownRxRecord {
   /** Source line number (1-based). */
   line: number;
   /** Original record number token. */
@@ -15,7 +15,7 @@ export interface UnknownNormalizedRecord {
 /**
  * Normalized patient information.
  */
-export interface JAHISPatient {
+export interface JahisRxPatient {
   /** Patient code from record 11. */
   code?: string;
   /** Patient name in Kanji. */
@@ -33,7 +33,7 @@ export interface JAHISPatient {
 /**
  * Normalized doctor information.
  */
-export interface JAHISDoctor {
+export interface JahisRxDoctor {
   /** Doctor code from record 5. */
   code?: string;
   /** Doctor name in Kana. */
@@ -45,7 +45,7 @@ export interface JAHISDoctor {
 /**
  * Normalized insurance and public-expense information.
  */
-export interface JAHISInsurance {
+export interface JahisRxInsurance {
   /** Insurance type code from record 21. */
   insuranceTypeCode?: string;
   /** Insurer number from record 22. */
@@ -226,7 +226,7 @@ export interface JAHISRp {
  *
  * This is the main application-facing payload returned as `result.data.normalized`.
  */
-export interface JAHISPrescription {
+export interface JahisRxPrescription {
   /** JAHIS header/version token from the first line. */
   version: string | null;
   /** Medical institution information from record 1. */
@@ -257,11 +257,11 @@ export interface JAHISPrescription {
     department?: string;
   };
   /** Doctor information from record 5. */
-  doctor?: JAHISDoctor;
+  doctor?: JahisRxDoctor;
   /** Patient information from records 11/12/13/14. */
-  patient?: JAHISPatient;
+  patient?: JahisRxPatient;
   /** Insurance/public-expense information from records 21-31. */
-  insurance?: JAHISInsurance;
+  insurance?: JahisRxInsurance;
   /** Prescription date from record 51. */
   prescriptionDate?: string;
   /** Dispensing due date from record 52. */
@@ -308,5 +308,7 @@ export interface JAHISPrescription {
   /** Prescription groups (RP blocks). */
   rps: JAHISRp[];
   /** Unsupported records preserved when `preserveUnknownRecords` is enabled. */
-  unknownRecords?: UnknownNormalizedRecord[];
+  unknownRecords?: UnknownRxRecord[];
 }
+
+export type UnknownNormalizedRecord = UnknownRxRecord;

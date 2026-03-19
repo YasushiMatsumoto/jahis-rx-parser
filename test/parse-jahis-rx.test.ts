@@ -27,8 +27,11 @@ describe("parseJahisRx", () => {
     const result = parseJahisRx(input);
 
     expect(result.ok).toBe(true);
-    expect(result.data?.normalized.version).toBe("JAHIS10");
-    expect(result.data?.raw).toHaveLength(2);
+    if (result.data) {
+      const data = result.data;
+      expect(data.normalized.version).toBe("JAHIS10");
+      expect(data.raw).toHaveLength(2);
+    }
   });
 
   // Ensures invalid top-line headers are reported in strict mode.
@@ -48,7 +51,10 @@ describe("parseJahisRx", () => {
     expect(result.rawRecords).toBeDefined();
     expect(result.rawRecords).toHaveLength(2);
     expect(result.rawRecords?.[1]?.recordNo).toBe("1");
-    expect(result.data?.raw).toHaveLength(2);
+    if (result.data) {
+      const data = result.data;
+      expect(data.raw).toHaveLength(2);
+    }
   });
 
   // Strict mode should fail when usage/drug references an unknown RP anchor.
@@ -67,7 +73,10 @@ describe("parseJahisRx", () => {
     const result = parseJahisRx(input, { strict: false });
 
     expect(result.ok).toBe(true);
-    expect(result.data?.normalized.rps).toHaveLength(1);
+    if (result.data) {
+      const data = result.data;
+      expect(data.normalized.rps).toHaveLength(1);
+    }
     expect(result.issues.some((issue) => issue.code === "MISSING_RP_RECORD")).toBe(true);
   });
 
@@ -93,20 +102,19 @@ describe("parseJahisRx", () => {
     expect(result.ok).toBe(true);
     expect(result.data).not.toBeNull();
     expect(result.issues.some((issue) => issue.code === "NON_STANDARD_RECORD_LAYOUT")).toBe(true);
-    expect(result.data?.normalized.version).toBe("JAHIS10");
-    expect(result.data?.normalized.institution?.name).toBe("テスト医療センター");
-    expect(result.data?.normalized.institution?.address).toBe(
-      "京都府テスト市テスト区テスト町1-2-3",
-    );
-    expect(result.data?.normalized.patient?.kanjiName).toBe("テスト 花子");
-    expect(result.data?.normalized.patient?.kanaName).toBe("ﾃｽﾄ ﾊﾅｺ");
-    expect(result.data?.normalized.prescriptionDate).toBe("20260130");
-    expect(result.data?.normalized.dispensingDueDate).toBe("20260202");
-    expect(result.data?.normalized.rps).toHaveLength(1);
-    expect(result.data?.normalized.rps[0]?.usageText).toBe("１日１回注射");
-    expect(result.data?.normalized.rps[0]?.drugs[0]?.code).toBe("2412403G3022");
-    expect(result.data?.normalized.rps[0]?.drugs[0]?.name).toBe(
-      "ソグルーヤ皮下注１５ｍｇ　１．５ｍＬ",
-    );
+    if (result.data) {
+      const data = result.data;
+      expect(data.normalized.version).toBe("JAHIS10");
+      expect(data.normalized.institution?.name).toBe("テスト医療センター");
+      expect(data.normalized.institution?.address).toBe("京都府テスト市テスト区テスト町1-2-3");
+      expect(data.normalized.patient?.kanjiName).toBe("テスト 花子");
+      expect(data.normalized.patient?.kanaName).toBe("ﾃｽﾄ ﾊﾅｺ");
+      expect(data.normalized.prescriptionDate).toBe("20260130");
+      expect(data.normalized.dispensingDueDate).toBe("20260202");
+      expect(data.normalized.rps).toHaveLength(1);
+      expect(data.normalized.rps[0]?.usageText).toBe("１日１回注射");
+      expect(data.normalized.rps[0]?.drugs[0]?.code).toBe("2412403G3022");
+      expect(data.normalized.rps[0]?.drugs[0]?.name).toBe("ソグルーヤ皮下注１５ｍｇ　１．５ｍＬ");
+    }
   });
 });

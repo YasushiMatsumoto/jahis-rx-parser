@@ -204,7 +204,7 @@ function makeAnchoredPayload(sample: string) {
 }
 
 const EXPECTED_ASSERTIONS: Array<
-  [string, (data: import("../src/types/parse.js").ParsedPrescriptionData) => void]
+  [string, (data: import("../src/jahis-rx/types/parse.js").ParsedPrescriptionData) => void]
 > = [
   [
     "1,,1234567,13,医療法人 工業会病院",
@@ -399,7 +399,7 @@ describe("spec doc samples — normalized field checks", () => {
       const result = parseJahisRx(input, { strict: false });
       expect(result.ok).toBe(true);
       expect(result.data).not.toBeNull();
-      assertFn(result.data as import("../src/types/parse.js").ParsedPrescriptionData);
+      assertFn(result.data as import("../src/jahis-rx/types/parse.js").ParsedPrescriptionData);
     });
   }
 });
@@ -409,7 +409,7 @@ describe("spec doc samples — normalized field checks", () => {
 function assertSampleMapped(
   recordNo: string,
   fields: string[],
-  data: import("../src/types/parse.js").ParsedPrescriptionData,
+  data: import("../src/jahis-rx/types/parse.js").ParsedPrescriptionData,
 ) {
   const n = data.normalized;
   switch (recordNo) {
@@ -560,7 +560,7 @@ describe("spec doc samples — broad auto-mapped assertions", () => {
       assertSampleMapped(
         recNo,
         fields,
-        res.data as import("../src/types/parse.js").ParsedPrescriptionData,
+        res.data as import("../src/jahis-rx/types/parse.js").ParsedPrescriptionData,
       );
     });
   }

@@ -1,4 +1,4 @@
-import type { JAHISPrescription } from "./normalized.js";
+import type { JahisRxPrescription } from "./normalized.js";
 
 /**
  * Severity level of a parse issue.
@@ -114,5 +114,12 @@ export interface ParsedPrescriptionData {
   /** Tokenized records in input order. */
   raw: RawRecord[];
   /** Application-friendly normalized prescription object. */
-  normalized: JAHISPrescription;
+  normalized: JahisRxPrescription;
 }
+
+export type JahisRxParseIssueLevel = ParseIssueLevel;
+export type JahisRxParseIssue = ParseIssue;
+export type JahisRxParseOptions = ParseOptions;
+export type JahisRxRawRecord = RawRecord;
+export type JahisRxParseResult = ParseResult;
+export type JahisRxParsedData = ParsedPrescriptionData;

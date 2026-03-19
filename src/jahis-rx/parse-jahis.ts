@@ -1,8 +1,8 @@
+import { parseRecord } from "../shared/records/parse-record.js";
+import { splitLines } from "../shared/tokenizer/split-lines.js";
 import { buildPrescription } from "./build/build-prescription.js";
 import { RECORD_NO } from "./constants/index.js";
 import { decodeRecord } from "./records/decode-record.js";
-import { parseRecord } from "./records/parse-record.js";
-import { splitLines } from "./tokenizer/split-lines.js";
 import type {
   ParsedPrescriptionData,
   ParseIssue,
@@ -86,7 +86,7 @@ const toDrugPriceUnitByCodeMap = (value: unknown): Record<string, string> | unde
     }
   }
 
-  return value as Record<string, string>;
+  return Object.fromEntries(entries);
 };
 
 const KNOWN_RECORD_NO_SET = new Set<string>(Object.values(RECORD_NO));
@@ -107,26 +107,41 @@ const toPrescriptionContext = (value: unknown): PrescriptionContext | undefined 
   if (!value || typeof value !== "object") {
     return undefined;
   }
-
-  const candidate = value as Record<string, unknown>;
   const context: PrescriptionContext = {};
 
-  const assignBoolean = (key: keyof PrescriptionContext): void => {
-    const v = candidate[key];
-    if (typeof v === "boolean") {
-      context[key] = v;
+  const assignBooleanFromValue = (key: keyof PrescriptionContext, propertyValue: unknown): void => {
+    if (typeof propertyValue === "boolean") {
+      context[key] = propertyValue;
     }
   };
 
-  assignBoolean("requireDepartment");
-  assignBoolean("requirePatientCopayClass");
-  assignBoolean("requireOccupationalAccident");
-  assignBoolean("requirePublicExpense1");
-  assignBoolean("requirePublicExpense2");
-  assignBoolean("requirePublicExpense3");
-  assignBoolean("requireSpecialPublicExpense");
-  assignBoolean("requireDispensingDueDate");
-  assignBoolean("requireNarcotics");
+  if ("requireDepartment" in value) {
+    assignBooleanFromValue("requireDepartment", value.requireDepartment);
+  }
+  if ("requirePatientCopayClass" in value) {
+    assignBooleanFromValue("requirePatientCopayClass", value.requirePatientCopayClass);
+  }
+  if ("requireOccupationalAccident" in value) {
+    assignBooleanFromValue("requireOccupationalAccident", value.requireOccupationalAccident);
+  }
+  if ("requirePublicExpense1" in value) {
+    assignBooleanFromValue("requirePublicExpense1", value.requirePublicExpense1);
+  }
+  if ("requirePublicExpense2" in value) {
+    assignBooleanFromValue("requirePublicExpense2", value.requirePublicExpense2);
+  }
+  if ("requirePublicExpense3" in value) {
+    assignBooleanFromValue("requirePublicExpense3", value.requirePublicExpense3);
+  }
+  if ("requireSpecialPublicExpense" in value) {
+    assignBooleanFromValue("requireSpecialPublicExpense", value.requireSpecialPublicExpense);
+  }
+  if ("requireDispensingDueDate" in value) {
+    assignBooleanFromValue("requireDispensingDueDate", value.requireDispensingDueDate);
+  }
+  if ("requireNarcotics" in value) {
+    assignBooleanFromValue("requireNarcotics", value.requireNarcotics);
+  }
 
   return context;
 };
@@ -190,8 +205,11 @@ const validateRecords = (records: RawRecord[], options: ParseOptions | undefined
     itemNames: string[],
   ): void => {
     for (let i = 0; i < requiredIndexes.length; i += 1) {
-      const fieldIndex = requiredIndexes[i] as number;
-      const itemName = itemNames[i] as string;
+      const fieldIndex = requiredIndexes[i];
+      const itemName = itemNames[i];
+      if (fieldIndex === undefined || itemName === undefined) {
+        continue;
+      }
       if (hasText(sourceRecord.fields[fieldIndex])) {
         continue;
       }

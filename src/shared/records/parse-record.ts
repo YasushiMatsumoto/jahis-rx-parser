@@ -1,5 +1,5 @@
+import type { RawRecord } from "../../jahis-rx/types/parse.js";
 import { splitFields } from "../tokenizer/split-fields.js";
-import type { RawRecord } from "../types/parse.js";
 
 /**
  * Parses one input line into a tokenized raw record.

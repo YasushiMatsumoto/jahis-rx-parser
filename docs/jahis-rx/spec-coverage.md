@@ -4,7 +4,7 @@
 
 - `Parse` 対応の一次情報: `src/records/decode-record.ts`
 - `Normalize` 対応の一次情報: `src/build/build-prescription.ts`
-- `Validate` ルールの一次情報: `src/parse-jahis-rx.ts`
+- `Validate` ルールの一次情報: `src/jahis-rx/parse-jahis.ts`
 - テストカバレッジの一次情報: `test/*.test.ts`
 
 ## ステータス定義
