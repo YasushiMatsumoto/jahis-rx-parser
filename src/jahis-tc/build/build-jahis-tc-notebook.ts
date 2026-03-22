@@ -6,6 +6,7 @@ import type {
   JahisTcRp,
 } from "../types/jahis-tc-normalized.js";
 import type {
+  JahisTcDrugRecord,
   JahisTcOtcMedicationIngredientRecord,
   JahisTcOtcMedicationRecord,
   JahisTcRecord,
@@ -14,6 +15,7 @@ import type {
 
 type JahisTcOtcMedication = NonNullable<JahisTcMedicationNotebook["otcMedications"]>[number];
 type JahisTcOtcIngredient = NonNullable<JahisTcOtcMedication["ingredients"]>[number];
+type JahisTcDrug = JahisTcRp["drugs"][number];
 type JahisTcRemainingMedicineConfirmation = NonNullable<
   JahisTcDispensing["remainingMedicineConfirmations"]
 >[number];
@@ -50,6 +52,24 @@ const createRemainingMedicineConfirmation = (
   return {
     text: record.text,
     recordCreator: record.recordCreator,
+  };
+};
+
+const createDrug = (record: JahisTcDrugRecord): JahisTcDrug => {
+  const generalName = record.raw.fields[8];
+  const generalNameCodeType = record.raw.fields[9];
+  const generalNameCode = record.raw.fields[10];
+
+  return {
+    name: record.name,
+    amount: record.amount,
+    unitName: record.unitName,
+    drugCodeType: record.drugCodeType,
+    drugCode: record.drugCode,
+    recordCreator: record.recordCreator,
+    generalName,
+    generalNameCodeType,
+    generalNameCode,
   };
 };
 
@@ -246,14 +266,7 @@ export const buildJahisTcNotebook = (
 
       case RECORD_KIND.drug: {
         const rp = ensureRp(record.rpNumber);
-        rp.drugs.push({
-          name: record.name,
-          amount: record.amount,
-          unitName: record.unitName,
-          drugCodeType: record.drugCodeType,
-          drugCode: record.drugCode,
-          recordCreator: record.recordCreator,
-        });
+        rp.drugs.push(createDrug(record));
         break;
       }
 

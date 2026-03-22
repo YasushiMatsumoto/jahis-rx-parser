@@ -185,14 +185,38 @@ const DUMMY_INSTITUTION = "1,,9700012,13,例示院病院";
 const DUMMY_DOCTOR = "5,,,山田 太郎";
 const DUMMY_PATIENT = "11,,ダミー 太郎,";
 const DUMMY_PRESC_DATE = "51,20260130";
+const DUMMY_SPLIT = "63,3,2";
+
+const makeDummyRp = (rpNumber: string): string => {
+  return `101,${rpNumber},1,内服,14`;
+};
+
+const makeDummyUsage = (rpNumber: string): string => {
+  return `111,${rpNumber},1,,毎食後服用,`;
+};
+
+const makeDummyDrug = (rpNumber: string, drugNumber: string): string => {
+  return `201,${rpNumber},${drugNumber},1,2,620000001,DrugA,3,1,錠`;
+};
 
 function makeAnchoredPayload(sample: string) {
-  const recNo = sample.split(",")[0];
+  const fields = sample.split(",");
+  const recNo = fields[0] ?? "";
+  const rpNumber = fields[1] && /^\d+$/.test(fields[1]) ? fields[1] : "1";
+  const drugNumber = fields[2] && /^\d+$/.test(fields[2]) ? fields[2] : "1";
   const extras: string[] = [];
   if (recNo !== "1") extras.push(DUMMY_INSTITUTION);
   if (recNo !== "5") extras.push(DUMMY_DOCTOR);
   if (recNo !== "11") extras.push(DUMMY_PATIENT);
   if (recNo !== "51") extras.push(DUMMY_PRESC_DATE);
+  if (["101", "102", "111", "181", "201", "211", "221", "231", "241", "281"].includes(recNo)) {
+    if (recNo !== "101") extras.push(makeDummyRp(rpNumber));
+    if (recNo === "102") extras.push(DUMMY_SPLIT);
+    if (recNo !== "111") extras.push(makeDummyUsage(rpNumber));
+  }
+  if (["211", "221", "231", "241", "281"].includes(recNo)) {
+    extras.push(makeDummyDrug(rpNumber, drugNumber));
+  }
   extras.push(sample);
   // sort by record number to satisfy ordering
   extras.sort((a, b) => {
@@ -221,21 +245,33 @@ const EXPECTED_ASSERTIONS: Array<
     },
   ],
   [
-    "3,03-0000-0000,,",
+    "3,0000-0000,000-1111,abc@defghi.jp",
     (data) => {
-      expect(data.normalized.institution?.phone).toBe("03-0000-0000");
+      expect(data.normalized.institution?.phone).toBe("0000-0000");
+      expect(data.normalized.institution?.fax).toBe("000-1111");
+      expect(data.normalized.institution?.otherContact).toBe("abc@defghi.jp");
     },
   ],
   [
-    "5,,,工業会 次郎",
+    "4,2,1,第一内科",
     (data) => {
+      expect(data.normalized.institution?.departmentCodeType).toBe("2");
+      expect(data.normalized.institution?.departmentCode).toBe("1");
+      expect(data.normalized.institution?.department).toBe("第一内科");
+    },
+  ],
+  [
+    "5,,ｺｳｷﾞｮｳｶｲ ｼﾞﾛｳ,工業会 次郎",
+    (data) => {
+      expect(data.normalized.doctor?.kanaName).toBe("ｺｳｷﾞｮｳｶｲ ｼﾞﾛｳ");
       expect(data.normalized.doctor?.kanjiName).toBe("工業会 次郎");
     },
   ],
   [
-    "11,,日薬 太郎,",
+    "11,,日薬 太郎,ﾆﾁﾔｸ ﾀﾛｳ",
     (data) => {
       expect(data.normalized.patient?.kanjiName).toBe("日薬 太郎");
+      expect(data.normalized.patient?.kanaName).toBe("ﾆﾁﾔｸ ﾀﾛｳ");
     },
   ],
   [
@@ -245,10 +281,17 @@ const EXPECTED_ASSERTIONS: Array<
     },
   ],
   [
-    "101,1,1,,14",
+    "101,1,9,訪問,1",
     (data) => {
-      expect(data.normalized.rps[0]?.dosageFormName).toBe("14");
-      expect(data.normalized.rps[0]?.dispensingQuantity).toBe("14");
+      expect(data.normalized.rps[0]?.dosageFormCode).toBe("9");
+      expect(data.normalized.rps[0]?.dosageFormName).toBe("1");
+      expect(data.normalized.rps[0]?.dispensingQuantity).toBe("1");
+    },
+  ],
+  [
+    "102,1,30,90",
+    (data) => {
+      expect(data.normalized.rps[0]?.splitDispensingQuantity).toBe("30");
     },
   ],
   [
@@ -258,13 +301,56 @@ const EXPECTED_ASSERTIONS: Array<
     },
   ],
   [
-    "201,1,1,1,2,612170709,,4,1,錠",
+    "181,1,1,8,１日おき,I1100000,",
+    (data) => {
+      const supplement = data.normalized.rps[0]?.usageSupplements?.[0];
+      expect(supplement?.usageSupplementCode).toBe("8");
+      expect(supplement?.usageSupplementText).toBe("１日おき");
+    },
+  ],
+  [
+    "201,1,1,1,2,612170709,ノルバスク錠２．５ｍｇ,4,1,錠",
     (data) => {
       const d = data.normalized.rps[0]?.drugs?.[0];
       expect(d?.code).toBe("612170709");
       expect(d?.infoClass).toBe("1");
+      expect(d?.codeType).toBe("2");
+      expect(d?.name).toBe("ノルバスク錠２．５ｍｇ");
       expect(d?.amount).toBe("4");
+      expect(d?.potencyFlag).toBe("1");
       expect(d?.unit).toBe("錠");
+    },
+  ],
+  [
+    "211,1,1,250",
+    (data) => {
+      expect(data.normalized.rps[0]?.drugs?.[0]?.unitConversions?.[0]?.convertedAmount).toBe(
+        "250",
+      );
+    },
+  ],
+  [
+    "221,1,1,1.5,0.5,,,,,,,,,",
+    (data) => {
+      const uneven = data.normalized.rps[0]?.drugs?.[0]?.unevenDosings?.[0];
+      expect(uneven?.unevenDosingAmount1).toBe("1.5");
+      expect(uneven?.unevenDosingAmount2).toBe("0.5");
+    },
+  ],
+  [
+    "231,1,1,1,1,,",
+    (data) => {
+      const burden = data.normalized.rps[0]?.drugs?.[0]?.burdenCategories?.[0];
+      expect(burden?.firstPublicExpenseBurdenCode).toBe("1");
+      expect(burden?.secondPublicExpenseBurdenCode).toBe("1");
+    },
+  ],
+  [
+    "241,1,1,1.5,4",
+    (data) => {
+      const singleDose = data.normalized.rps[0]?.drugs?.[0]?.singleDoseAmounts?.[0];
+      expect(singleDose?.singleDoseAmount).toBe("1.5");
+      expect(singleDose?.timesPerDay).toBe("4");
     },
   ],
   [
@@ -306,10 +392,12 @@ const EXPECTED_ASSERTIONS: Array<
     },
   ],
   [
-    "23,,12345674,1,",
+    "23,０１－２３,１２３４,2,05",
     (data) => {
-      expect(data.normalized.insurance?.cardNumber).toBe("12345674");
-      expect(data.normalized.insurance?.insuredRelationshipCode).toBe("1");
+      expect(data.normalized.insurance?.cardSymbol).toBe("０１－２３");
+      expect(data.normalized.insurance?.cardNumber).toBe("１２３４");
+      expect(data.normalized.insurance?.insuredRelationshipCode).toBe("2");
+      expect(data.normalized.insurance?.cardBranchNumber).toBe("05");
     },
   ],
   [
@@ -330,6 +418,13 @@ const EXPECTED_ASSERTIONS: Array<
     (data) => {
       expect(data.normalized.insurance?.publicExpense?.first?.payerNumber).toBe("51123456");
       expect(data.normalized.insurance?.publicExpense?.first?.recipientNumber).toBe("1234567");
+    },
+  ],
+  [
+    "30,特－１２,１２３４５６７",
+    (data) => {
+      expect(data.normalized.insurance?.publicExpense?.special?.payerNumber).toBe("特－１２");
+      expect(data.normalized.insurance?.publicExpense?.special?.recipientNumber).toBe("１２３４５６７");
     },
   ],
   [

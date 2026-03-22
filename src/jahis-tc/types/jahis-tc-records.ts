@@ -109,6 +109,9 @@ export interface JahisTcDrugRecord extends JahisTcBaseRecord {
   drugCodeType?: string | undefined;
   drugCode?: string | undefined;
   recordCreator?: string | undefined;
+  generalName?: string | undefined;
+  generalNameCodeType?: string | undefined;
+  generalNameCode?: string | undefined;
 }
 
 export interface JahisTcRpTextRecord extends JahisTcBaseRecord {

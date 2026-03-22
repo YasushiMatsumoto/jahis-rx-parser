@@ -34,6 +34,9 @@ export interface JahisTcRp {
     drugCodeType?: string | undefined;
     drugCode?: string | undefined;
     recordCreator?: string | undefined;
+    generalName?: string | undefined;
+    generalNameCodeType?: string | undefined;
+    generalNameCode?: string | undefined;
   }>;
   drugSupplements?: Array<{
     text?: string | undefined;

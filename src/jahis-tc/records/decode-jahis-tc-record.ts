@@ -206,6 +206,9 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
         drugCodeType: raw.fields[5],
         drugCode: raw.fields[6],
         recordCreator: raw.fields[7],
+        generalName: raw.fields[8],
+        generalNameCodeType: raw.fields[9],
+        generalNameCode: raw.fields[10],
       };
 
       return record;
