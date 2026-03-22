@@ -24,6 +24,11 @@ JAHISのデコード済みテキストを解析し、JSONへ変換するTypeScri
 npm install jahis-rx-parser
 ```
 
+## 対応ランタイム
+
+- Node.js 20 以上
+- ESM / CJS の両方に対応
+
 ## 公開API
 
 - `parseJahisRx(input, options)`: JAHIS Rx を解析します
@@ -105,4 +110,35 @@ const result = parseJahisTc(input, { strict: true });
 ## 対応仕様
 
 - JAHIS院外処方箋2次元シンボル記録条件規約 Ver.1.10
-- JAHIS電子版お薬手帳データフォーマット仕様書 Ver.2.4
+- JAHIS電子版お薬手帳データフォーマット仕様書 Ver.2.6
+
+## 開発時の確認コマンド
+
+```bash
+npm run check
+```
+
+公開前と同等のフル確認:
+
+```bash
+npm run check:publish
+```
+
+## 公開フロー
+
+ローカルで公開前チェックを通します。
+
+```bash
+npm run release:preflight
+npm run check:publish
+```
+
+バージョン更新後に Git tag を push し、GitHub Release を作成します。
+
+```bash
+git tag v0.1.0
+git push origin main --tags
+npm run release:github
+```
+
+GitHub Release 公開後は GitHub Actions の npm publish workflow から npm 公開を自動実行できる構成です。

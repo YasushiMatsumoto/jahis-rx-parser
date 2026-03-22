@@ -1,4 +1,9 @@
-import type { ParseIssue, ParseOptions, RawRecord } from "../../shared/types/parse.js";
+import type {
+  ParseIssue,
+  ParseIssueLevel,
+  ParseOptions,
+  RawRecord,
+} from "../../shared/types/parse.js";
 import type { JahisTcMedicationNotebook } from "./jahis-tc-normalized.js";
 
 export interface JahisTcParsedData {
@@ -13,4 +18,9 @@ export interface JahisTcParseResult {
   rawRecords?: RawRecord[];
 }
 
-export type { ParseIssue, ParseOptions, RawRecord };
+export type { ParseIssue, ParseIssueLevel, ParseOptions, RawRecord };
+
+export type JahisTcParseIssueLevel = ParseIssueLevel;
+export type JahisTcParseIssue = ParseIssue;
+export type JahisTcParseOptions = ParseOptions;
+export type JahisTcRawRecord = RawRecord;

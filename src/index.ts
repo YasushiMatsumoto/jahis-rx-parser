@@ -28,9 +28,13 @@ export type {
   JahisTcDispensing,
   JahisTcMedicationNotebook,
   JahisTcParsedData,
+  JahisTcParseIssue,
+  JahisTcParseIssueLevel,
+  JahisTcParseOptions,
   JahisTcParseResult,
   JahisTcPatient,
   JahisTcPrescription,
+  JahisTcRawRecord,
   JahisTcRp,
   JahisTcUnknownRecord,
 } from "./jahis-tc/index.js";

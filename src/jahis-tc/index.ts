@@ -11,8 +11,13 @@ export type {
 } from "./types/jahis-tc-normalized.js";
 export type {
   JahisTcParsedData,
+  JahisTcParseIssue,
+  JahisTcParseIssueLevel,
+  JahisTcParseOptions,
   JahisTcParseResult,
+  JahisTcRawRecord,
   ParseIssue,
+  ParseIssueLevel,
   ParseOptions,
   RawRecord,
 } from "./types/jahis-tc-parse.js";

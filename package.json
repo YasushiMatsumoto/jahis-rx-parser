@@ -1,11 +1,12 @@
 {
   "name": "jahis-rx-parser",
   "version": "0.1.0",
-  "description": "Parser for JAHIS outpatient prescription QR text",
+  "description": "TypeScript parser library for JAHIS Rx and JAHIS TC decoded text",
   "keywords": [
     "jahis",
     "prescription",
     "rx",
+    "tc",
     "parser",
     "qr",
     "medical"
@@ -37,25 +38,35 @@
     "LICENSE"
   ],
   "sideEffects": false,
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "clean": "rimraf dist coverage",
-    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "build": "tsup src/index.ts --tsconfig tsconfig.build.json --format esm,cjs --dts --sourcemap",
+    "dev": "tsup src/index.ts --tsconfig tsconfig.build.json --format esm,cjs --dts --watch",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --exclude test/external-data.dynamic.test.ts",
+    "test:full": "vitest run",
     "test:external": "vitest run test/external-data.dynamic.test.ts",
-    "test:browser": "vitest run --environment happy-dom",
+    "test:browser": "vitest run test/parse-jahis.test.ts test/parse-jahis-rx.test.ts test/parse-jahis-tc.test.ts --environment happy-dom",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run test:browser",
-    "prepack": "npm run clean && npm run build && npm run check",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test",
+    "check:ci": "npm run check && npm run test:external && npm run test:browser",
+    "check:publish": "npm run clean && npm run build && npm run check:ci && npm pack --dry-run",
+    "prepack": "npm run clean && npm run build && npm run check:ci",
+    "publish:npm:dry-run": "npm publish --dry-run",
+    "release:preflight": "node ./tools/release/preflight.mjs",
+    "release:github": "node ./tools/release/gh-release.mjs",
     "diagnostics": "npx vitest run tools/diagnostics --run"
   },
   "devDependencies": {
