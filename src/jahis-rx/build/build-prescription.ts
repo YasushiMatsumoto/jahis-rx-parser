@@ -1,6 +1,6 @@
 import { PROPERTY_KEY, RECORD_KIND } from "../constants/index.js";
 import type { ParsedRecord } from "../types/decoded-records.js";
-import type { JAHISDrug, JAHISPrescription, JAHISRp } from "../types/normalized.js";
+import type { JAHISDrug, JAHISRp, JahisRxPrescription } from "../types/normalized.js";
 import type { ParseOptions } from "../types/parse.js";
 
 /**
@@ -11,12 +11,12 @@ import type { ParseOptions } from "../types/parse.js";
  * @param value Optional value to assign.
  */
 const withOptionalString = <T extends object, K extends Extract<keyof T, string>>(
-  target: T,
+  target: T & Partial<Record<K, string>>,
   key: K,
-  value: string | undefined,
+  value: (T & Partial<Record<K, string>>)[K],
 ): void => {
   if (value !== undefined) {
-    Object.assign(target, { [key]: value } as Pick<T, K>);
+    target[key] = value;
   }
 };
 
@@ -30,8 +30,8 @@ const withOptionalString = <T extends object, K extends Extract<keyof T, string>
 export const buildPrescription = (
   records: ParsedRecord[],
   options?: ParseOptions,
-): JAHISPrescription => {
-  const prescription: JAHISPrescription = {
+): JahisRxPrescription => {
+  const prescription: JahisRxPrescription = {
     version: null,
     rps: [],
   };

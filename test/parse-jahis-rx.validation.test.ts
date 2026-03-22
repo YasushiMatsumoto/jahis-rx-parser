@@ -553,7 +553,10 @@ describe("parseJahisRx validation", () => {
     expect(result.ok).toBe(true);
     expect(result.issues.some((issue) => issue.code === "NON_STANDARD_RECORD_LAYOUT")).toBe(true);
     expect(result.issues.some((issue) => issue.level === "warning")).toBe(true);
-    expect(result.data?.normalized.rps[0]?.usageText).toBe("１日１回注射");
+    if (result.data) {
+      const data = result.data;
+      expect(data.normalized.rps[0]?.usageText).toBe("１日１回注射");
+    }
   });
 
   // Non-standard compact 201 layout should fail in strict mode.
@@ -576,8 +579,11 @@ describe("parseJahisRx validation", () => {
     expect(result.ok).toBe(true);
     expect(result.issues.some((issue) => issue.code === "NON_STANDARD_RECORD_LAYOUT")).toBe(true);
     expect(result.issues.some((issue) => issue.level === "warning")).toBe(true);
-    expect(result.data?.normalized.rps[0]?.drugs[0]?.code).toBe("620000001");
-    expect(result.data?.normalized.rps[0]?.drugs[0]?.unit).toBe("錠");
+    if (result.data) {
+      const data = result.data;
+      expect(data.normalized.rps[0]?.drugs[0]?.code).toBe("620000001");
+      expect(data.normalized.rps[0]?.drugs[0]?.unit).toBe("錠");
+    }
   });
 
   // Derived validation inputs must stay synchronized with the normalization base fixture.

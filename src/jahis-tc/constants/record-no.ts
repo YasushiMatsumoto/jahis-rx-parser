@@ -1,0 +1,27 @@
+export const JAHIS_TC_RECORD_NO = {
+  patient: "1",
+  patientRemark: "2",
+  otcMedication: "3",
+  otcMedicationIngredient: "31",
+  notebookMemo: "4",
+  dispensingDate: "5",
+  dispensingInstitution: "11",
+  dispensingStaff: "15",
+  prescribingInstitution: "51",
+  prescribingDoctor: "55",
+  drug: "201",
+  drugSupplement: "281",
+  drugCaution: "291",
+  usage: "301",
+  usageSupplement: "311",
+  prescriptionCaution: "391",
+  overallCaution: "401",
+  providedInfo: "411",
+  remainingMedicineConfirmation: "421",
+  remark: "501",
+  patientEntry: "601",
+  familyPharmacist: "701",
+  splitControl: "911",
+} as const;
+
+export type JahisTcRecordNo = (typeof JAHIS_TC_RECORD_NO)[keyof typeof JAHIS_TC_RECORD_NO];

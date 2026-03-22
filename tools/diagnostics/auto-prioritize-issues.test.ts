@@ -66,7 +66,9 @@ it("auto-prioritize likely bugs in drug-related samples", () => {
     if (recNo === "201" && codeField) {
       const normCode = drug?.code ?? "";
       if (!isNonEmpty(normCode) || normCode !== codeField) {
-        reasons.push(`code mismatch: sample has code='${codeField}' but normalized.code='${normCode}'`);
+        reasons.push(
+          `code mismatch: sample has code='${codeField}' but normalized.code='${normCode}'`,
+        );
       }
     }
 
@@ -104,10 +106,14 @@ it("auto-prioritize likely bugs in drug-related samples", () => {
         const nf1 = numericFields[0] ?? null;
         const nf2 = numericFields[1] ?? null;
         if (nf1 && String(ud.unevenDosingAmount1) !== nf1) {
-          reasons.push(`221 amount1 mismatch: sample='${nf1}' normalized='${ud.unevenDosingAmount1}'`);
+          reasons.push(
+            `221 amount1 mismatch: sample='${nf1}' normalized='${ud.unevenDosingAmount1}'`,
+          );
         }
         if (nf2 && String(ud.unevenDosingAmount2) !== nf2) {
-          reasons.push(`221 amount2 mismatch: sample='${nf2}' normalized='${ud.unevenDosingAmount2}'`);
+          reasons.push(
+            `221 amount2 mismatch: sample='${nf2}' normalized='${ud.unevenDosingAmount2}'`,
+          );
         }
       }
     }

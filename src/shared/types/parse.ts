@@ -1,5 +1,3 @@
-import type { JAHISPrescription } from "./normalized.js";
-
 /**
  * Severity level of a parse issue.
  */
@@ -33,12 +31,12 @@ export interface ParseOptions {
    * In strict mode, structural validation issues can block parsed output.
    */
   strict?: boolean;
-  /** Includes tokenized raw records in `ParseResult.rawRecords`. */
+  /** Includes tokenized raw records in parse results. */
   includeRawRecords?: boolean;
   /**
    * Preserves unsupported records in normalized output.
    *
-   * When false, unknown records are dropped from `normalized.unknownRecords`.
+   * When false, unknown records are dropped from normalized output.
    */
   preserveUnknownRecords?: boolean;
   /**
@@ -46,16 +44,10 @@ export interface ParseOptions {
    *
    * Key: drug code (for example receipt code/YJ/HOT/etc from record 201)
    * Value: official listed unit for the code (for example `mL`, `錠`)
-   *
-   * When provided, validation checks: if record 201 unit differs from this unit,
-   * record 211 must exist for the same RP/drug number.
    */
   drugPriceUnitByCode?: Record<string, string>;
   /**
    * Optional context flags to enforce spec conditional-required records.
-   *
-   * These flags are used when business context cannot be inferred from record
-   * payload alone (for example "当該処方箋" conditions in JAHIS spec).
    */
   prescriptionContext?: {
     /** Require record 4 (department). */
@@ -91,28 +83,4 @@ export interface RawRecord {
   fields: string[];
   /** Original line text before parsing. */
   raw: string;
-}
-
-/**
- * Top-level parser result.
- */
-export interface ParseResult {
-  /** True when no blocking error exists. */
-  ok: boolean;
-  /** Parsed payload, or `null` when strict validation fails. */
-  data: ParsedPrescriptionData | null;
-  /** Collected validation and parse issues. */
-  issues: ParseIssue[];
-  /** Optional direct access to tokenized raw records. */
-  rawRecords?: RawRecord[];
-}
-
-/**
- * Parsed payload containing both raw and normalized views.
- */
-export interface ParsedPrescriptionData {
-  /** Tokenized records in input order. */
-  raw: RawRecord[];
-  /** Application-friendly normalized prescription object. */
-  normalized: JAHISPrescription;
 }

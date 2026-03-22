@@ -10,9 +10,9 @@
 
 関連ドキュメント:
 
-- 実装対応状況: `docs/spec-coverage.md`
+- 実装対応状況: `docs/jahis-rx/spec-coverage.md`
 - 外部データ動的テスト: `test/external-data/README.md`
-- コード表（別表）: `docs/jahis-code-tables.md`
+- コード表（別表）: `docs/jahis-rx/jahis-rx-codes.md`
 
 ---
 
@@ -20,7 +20,7 @@
 
 1. フィールド表・ルール・サンプル・解釈ノートを埋める。
 2. 仕様差分がある場合は、他バージョンにも差分注記を入れる。
-3. 年号区分コード・診療科コードなどのコード表は `docs/jahis-code-tables.md` に記載する。
+3. 年号区分コード・診療科コードなどのコード表は `docs/jahis-rx/jahis-rx-codes.md` に記載する。
 
 ---
 

@@ -17,80 +17,65 @@ describe("parseJahisRx normalization", () => {
     const result = parseJahisRx(input, { strict: false });
 
     expect(result.ok).toBe(true);
-    expect(result.data?.normalized.institution?.code).toBe("1234567");
-    expect(result.data?.normalized.institution?.name).toBe("テスト医院");
-    expect(result.data?.normalized.institution?.address).toBe("東京都港区新橋1-2-3");
-    expect(result.data?.normalized.institution?.phone).toBe("03-1111-2222");
-    expect(result.data?.normalized.institution?.department).toBe("内科");
-    expect(result.data?.normalized.doctor?.code).toBe("DR001");
-    expect(result.data?.normalized.doctor?.kanjiName).toBe("山田 一郎");
-    expect(result.data?.normalized.patient?.code).toBe("PT001");
-    expect(result.data?.normalized.patient?.kanjiName).toBe("日薬 太郎");
-    expect(result.data?.normalized.patient?.kanaName).toBe("ﾆﾁﾔｸ ﾀﾛｳ");
-    expect(result.data?.normalized.patient?.sexCode).toBe("1");
-    expect(result.data?.normalized.patient?.birthDate).toBe("19600606");
-    expect(result.data?.normalized.patient?.copayClassCode).toBe("3");
-    expect(result.data?.normalized.insurance?.insuranceTypeCode).toBe("1");
-    expect(result.data?.normalized.insurance?.insurerNumber).toBe("12345678");
-    expect(result.data?.normalized.insurance?.cardSymbol).toBe("AB");
-    expect(result.data?.normalized.insurance?.cardNumber).toBe("12345");
-    expect(result.data?.normalized.insurance?.insuredRelationshipCode).toBe("1");
-    expect(result.data?.normalized.insurance?.cardBranchNumber).toBe("01");
-    expect(result.data?.normalized.insurance?.patientCopayRate).toBe("30");
-    expect(result.data?.normalized.insurance?.insuranceBenefitRate).toBe("70");
-    expect(result.data?.normalized.insurance?.occupationalAccidentReasonCode).toBe("3");
-    expect(result.data?.normalized.insurance?.publicExpense?.first?.payerNumber).toBe("12123456");
-    expect(result.data?.normalized.insurance?.publicExpense?.first?.recipientNumber).toBe(
-      "1234567",
-    );
-    expect(result.data?.normalized.insurance?.publicExpense?.second?.payerNumber).toBe("22123456");
-    expect(result.data?.normalized.insurance?.publicExpense?.third?.payerNumber).toBe("32123456");
-    expect(result.data?.normalized.insurance?.publicExpense?.special?.payerNumber).toBe("特-12");
-    expect(result.data?.normalized.insurance?.receiptTypeCode).toBe("1112");
-    expect(result.data?.normalized.dispensingDueDate).toBe("20260317");
-    expect(result.data?.normalized.narcotics?.patientAddress).toBe("東京都港区新橋1-1-1");
-    expect(result.data?.normalized.narcotics?.patientPhone).toBe("03-0000-0000");
-    expect(result.data?.normalized.remainingMedicineConfirmationFlag).toBe("2");
-    expect(result.data?.normalized.splitDispensing?.totalCount).toBe("3");
-    expect(result.data?.normalized.splitDispensing?.currentCount).toBe("2");
-    expect(result.data?.normalized.rps?.[0]?.splitDispensingQuantity).toBe("14");
-    expect(result.data?.normalized.rps?.[0]?.usageSupplements?.[0]?.usageSupplementCode).toBe("U1");
-    expect(result.data?.normalized.rps?.[0]?.usageSupplements?.[0]?.usageSupplementText).toBe(
-      "就寝前",
-    );
-    expect(result.data?.normalized.rps[0]?.drugs[0]?.supplements?.[0]?.supplementCode).toBe("A1");
-    expect(result.data?.normalized.rps[0]?.drugs[0]?.supplements?.[0]?.supplementText).toBe(
-      "粉砕可",
-    );
-    expect(result.data?.normalized.rps[0]?.drugs[0]?.unitConversions?.[0]?.convertedAmount).toBe(
-      "500",
-    );
-    expect(result.data?.normalized.rps[0]?.drugs[0]?.unitConversions?.[0]?.convertedUnit).toBe(
-      "mg",
-    );
-    expect(result.data?.normalized.rps[0]?.drugs[0]?.unevenDosings?.[0]?.unevenDosingCode).toBe(
-      "E1",
-    );
-    expect(result.data?.normalized.rps[0]?.drugs[0]?.unevenDosings?.[0]?.unevenDosingText).toBe(
-      "朝多め",
-    );
-    expect(
-      result.data?.normalized.rps[0]?.drugs[0]?.burdenCategories?.[0]?.burdenCategoryCode,
-    ).toBe("B1");
-    expect(
-      result.data?.normalized.rps[0]?.drugs[0]?.burdenCategories?.[0]?.burdenCategoryText,
-    ).toBe("公費対象");
-    expect(result.data?.normalized.rps[0]?.drugs[0]?.singleDoseAmounts?.[0]?.singleDoseAmount).toBe(
-      "1",
-    );
-    expect(result.data?.normalized.rps[0]?.drugs[0]?.singleDoseAmounts?.[0]?.singleDoseUnit).toBe(
-      "錠",
-    );
-    expect(result.data?.normalized.refill?.totalUseCount).toBe("3");
-    expect(result.data?.normalized.notes?.[0]?.sequence).toBe("1");
-    expect(result.data?.normalized.notes?.[0]?.text).toBe("訪問");
-    expect(result.data?.normalized.prescriptionNumber?.numberType).toBe("1");
-    expect(result.data?.normalized.prescriptionNumber?.number).toBe("1234567890123456");
+    if (result.data) {
+      const data = result.data;
+      expect(data.normalized.institution?.code).toBe("1234567");
+      expect(data.normalized.institution?.name).toBe("テスト医院");
+      expect(data.normalized.institution?.address).toBe("東京都港区新橋1-2-3");
+      expect(data.normalized.institution?.phone).toBe("03-1111-2222");
+      expect(data.normalized.institution?.department).toBe("内科");
+      expect(data.normalized.doctor?.code).toBe("DR001");
+      expect(data.normalized.doctor?.kanjiName).toBe("山田 一郎");
+      expect(data.normalized.patient?.code).toBe("PT001");
+      expect(data.normalized.patient?.kanjiName).toBe("日薬 太郎");
+      expect(data.normalized.patient?.kanaName).toBe("ﾆﾁﾔｸ ﾀﾛｳ");
+      expect(data.normalized.patient?.sexCode).toBe("1");
+      expect(data.normalized.patient?.birthDate).toBe("19600606");
+      expect(data.normalized.patient?.copayClassCode).toBe("3");
+      expect(data.normalized.insurance?.insuranceTypeCode).toBe("1");
+      expect(data.normalized.insurance?.insurerNumber).toBe("12345678");
+      expect(data.normalized.insurance?.cardSymbol).toBe("AB");
+      expect(data.normalized.insurance?.cardNumber).toBe("12345");
+      expect(data.normalized.insurance?.insuredRelationshipCode).toBe("1");
+      expect(data.normalized.insurance?.cardBranchNumber).toBe("01");
+      expect(data.normalized.insurance?.patientCopayRate).toBe("30");
+      expect(data.normalized.insurance?.insuranceBenefitRate).toBe("70");
+      expect(data.normalized.insurance?.occupationalAccidentReasonCode).toBe("3");
+      expect(data.normalized.insurance?.publicExpense?.first?.payerNumber).toBe("12123456");
+      expect(data.normalized.insurance?.publicExpense?.first?.recipientNumber).toBe("1234567");
+      expect(data.normalized.insurance?.publicExpense?.second?.payerNumber).toBe("22123456");
+      expect(data.normalized.insurance?.publicExpense?.third?.payerNumber).toBe("32123456");
+      expect(data.normalized.insurance?.publicExpense?.special?.payerNumber).toBe("特-12");
+      expect(data.normalized.insurance?.receiptTypeCode).toBe("1112");
+      expect(data.normalized.dispensingDueDate).toBe("20260317");
+      expect(data.normalized.narcotics?.patientAddress).toBe("東京都港区新橋1-1-1");
+      expect(data.normalized.narcotics?.patientPhone).toBe("03-0000-0000");
+      expect(data.normalized.remainingMedicineConfirmationFlag).toBe("2");
+      expect(data.normalized.splitDispensing?.totalCount).toBe("3");
+      expect(data.normalized.splitDispensing?.currentCount).toBe("2");
+      expect(data.normalized.rps?.[0]?.splitDispensingQuantity).toBe("14");
+      expect(data.normalized.rps?.[0]?.usageSupplements?.[0]?.usageSupplementCode).toBe("U1");
+      expect(data.normalized.rps?.[0]?.usageSupplements?.[0]?.usageSupplementText).toBe("就寝前");
+      expect(data.normalized.rps[0]?.drugs[0]?.supplements?.[0]?.supplementCode).toBe("A1");
+      expect(data.normalized.rps[0]?.drugs[0]?.supplements?.[0]?.supplementText).toBe("粉砕可");
+      expect(data.normalized.rps[0]?.drugs[0]?.unitConversions?.[0]?.convertedAmount).toBe("500");
+      expect(data.normalized.rps[0]?.drugs[0]?.unitConversions?.[0]?.convertedUnit).toBe("mg");
+      expect(data.normalized.rps[0]?.drugs[0]?.unevenDosings?.[0]?.unevenDosingCode).toBe("E1");
+      expect(data.normalized.rps[0]?.drugs[0]?.unevenDosings?.[0]?.unevenDosingText).toBe("朝多め");
+      expect(data.normalized.rps[0]?.drugs[0]?.burdenCategories?.[0]?.burdenCategoryCode).toBe(
+        "B1",
+      );
+      expect(data.normalized.rps[0]?.drugs[0]?.burdenCategories?.[0]?.burdenCategoryText).toBe(
+        "公費対象",
+      );
+      expect(data.normalized.rps[0]?.drugs[0]?.singleDoseAmounts?.[0]?.singleDoseAmount).toBe("1");
+      expect(data.normalized.rps[0]?.drugs[0]?.singleDoseAmounts?.[0]?.singleDoseUnit).toBe("錠");
+      expect(data.normalized.refill?.totalUseCount).toBe("3");
+      expect(data.normalized.notes?.[0]?.sequence).toBe("1");
+      expect(data.normalized.notes?.[0]?.text).toBe("訪問");
+      expect(data.normalized.prescriptionNumber?.numberType).toBe("1");
+      expect(data.normalized.prescriptionNumber?.number).toBe("1234567890123456");
+    }
   });
 
   // Unknown records are preserved by default to keep unsupported data inspectable.

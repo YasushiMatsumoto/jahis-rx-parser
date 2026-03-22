@@ -93,12 +93,12 @@ const isPotencyFlag = (value: string | undefined): boolean => {
  * @param value Optional value to assign.
  */
 const withOptionalString = <T extends object, K extends Extract<keyof T, string>>(
-  target: T,
+  target: T & Partial<Record<K, string>>,
   key: K,
-  value: string | undefined,
+  value: (T & Partial<Record<K, string>>)[K],
 ): void => {
   if (value !== undefined) {
-    Object.assign(target, { [key]: value } as Pick<T, K>);
+    target[key] = value;
   }
 };
 

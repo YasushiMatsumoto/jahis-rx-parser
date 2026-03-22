@@ -203,10 +203,9 @@ function makeAnchoredPayload(sample: string) {
   return [DUMMY_HEADER, ...extras].join("\n") + "\n";
 }
 
-const EXPECTED_ASSERTIONS: Array<[
-  string,
-  (data: import("../src/types/parse.js").ParsedPrescriptionData) => void
-]> = [
+const EXPECTED_ASSERTIONS: Array<
+  [string, (data: import("../src/jahis-rx/types/parse.js").ParsedPrescriptionData) => void]
+> = [
   [
     "1,,1234567,13,医療法人 工業会病院",
     (data) => {
@@ -218,9 +217,7 @@ const EXPECTED_ASSERTIONS: Array<[
   [
     "2,,東京都港区新橋 1 丁目 11 番 ○×ビル 5 階",
     (data) => {
-      expect(data.normalized.institution?.address).toBe(
-        "東京都港区新橋 1 丁目 11 番 ○×ビル 5 階"
-      );
+      expect(data.normalized.institution?.address).toBe("東京都港区新橋 1 丁目 11 番 ○×ビル 5 階");
     },
   ],
   [
@@ -356,9 +353,7 @@ const EXPECTED_ASSERTIONS: Array<[
   [
     "61,,東京都港区新橋1丁目△番○×ビル5階,03(0000)0000",
     (data) => {
-      expect(data.normalized.narcotics?.patientAddress).toBe(
-        "東京都港区新橋1丁目△番○×ビル5階"
-      );
+      expect(data.normalized.narcotics?.patientAddress).toBe("東京都港区新橋1丁目△番○×ビル5階");
       expect(data.normalized.narcotics?.patientPhone).toBe("03(0000)0000");
     },
   ],
@@ -392,9 +387,7 @@ const EXPECTED_ASSERTIONS: Array<[
     "82,1,1234567890123456",
     (data) => {
       expect(data.normalized.prescriptionNumber?.numberType).toBe("1");
-      expect(data.normalized.prescriptionNumber?.number).toBe(
-        "1234567890123456"
-      );
+      expect(data.normalized.prescriptionNumber?.number).toBe("1234567890123456");
     },
   ],
 ];
@@ -406,7 +399,7 @@ describe("spec doc samples — normalized field checks", () => {
       const result = parseJahisRx(input, { strict: false });
       expect(result.ok).toBe(true);
       expect(result.data).not.toBeNull();
-      assertFn(result.data as import("../src/types/parse.js").ParsedPrescriptionData);
+      assertFn(result.data as import("../src/jahis-rx/types/parse.js").ParsedPrescriptionData);
     });
   }
 });
@@ -416,7 +409,7 @@ describe("spec doc samples — normalized field checks", () => {
 function assertSampleMapped(
   recordNo: string,
   fields: string[],
-  data: import("../src/types/parse.js").ParsedPrescriptionData
+  data: import("../src/jahis-rx/types/parse.js").ParsedPrescriptionData,
 ) {
   const n = data.normalized;
   switch (recordNo) {
@@ -466,22 +459,30 @@ function assertSampleMapped(
       if ((fields[2] || "").trim()) expect(n.insurance?.insuranceBenefitRate).toBe(fields[2]);
       break;
     case "25":
-      if ((fields[1] || "").trim()) expect(n.insurance?.occupationalAccidentReasonCode).toBe(fields[1]);
+      if ((fields[1] || "").trim())
+        expect(n.insurance?.occupationalAccidentReasonCode).toBe(fields[1]);
       break;
     case "27":
-      if ((fields[1] || "").trim()) expect(n.insurance?.publicExpense?.first?.payerNumber).toBe(fields[1]);
-      if ((fields[2] || "").trim()) expect(n.insurance?.publicExpense?.first?.recipientNumber).toBe(fields[2]);
+      if ((fields[1] || "").trim())
+        expect(n.insurance?.publicExpense?.first?.payerNumber).toBe(fields[1]);
+      if ((fields[2] || "").trim())
+        expect(n.insurance?.publicExpense?.first?.recipientNumber).toBe(fields[2]);
       break;
     case "28":
-      if ((fields[1] || "").trim()) expect(n.insurance?.publicExpense?.second?.payerNumber).toBe(fields[1]);
-      if ((fields[2] || "").trim()) expect(n.insurance?.publicExpense?.second?.recipientNumber).toBe(fields[2]);
+      if ((fields[1] || "").trim())
+        expect(n.insurance?.publicExpense?.second?.payerNumber).toBe(fields[1]);
+      if ((fields[2] || "").trim())
+        expect(n.insurance?.publicExpense?.second?.recipientNumber).toBe(fields[2]);
       break;
     case "29":
-      if ((fields[1] || "").trim()) expect(n.insurance?.publicExpense?.third?.payerNumber).toBe(fields[1]);
-      if ((fields[2] || "").trim()) expect(n.insurance?.publicExpense?.third?.recipientNumber).toBe(fields[2]);
+      if ((fields[1] || "").trim())
+        expect(n.insurance?.publicExpense?.third?.payerNumber).toBe(fields[1]);
+      if ((fields[2] || "").trim())
+        expect(n.insurance?.publicExpense?.third?.recipientNumber).toBe(fields[2]);
       break;
     case "30":
-      if ((fields[1] || "").trim()) expect(n.insurance?.publicExpense?.special?.payerNumber).toBe(fields[1]);
+      if ((fields[1] || "").trim())
+        expect(n.insurance?.publicExpense?.special?.payerNumber).toBe(fields[1]);
       break;
     case "31":
       if ((fields[1] || "").trim()) expect(n.insurance?.receiptTypeCode).toBe(fields[1]);
@@ -554,9 +555,13 @@ describe("spec doc samples — broad auto-mapped assertions", () => {
       const res = parseJahisRx(input, { strict: false });
       expect(res.ok).toBe(true);
       expect(res.data).not.toBeNull();
-  const recNo = sample.split(",")[0] ?? "";
-  const fields = sample.split(",");
-      assertSampleMapped(recNo, fields, res.data as import("../src/types/parse.js").ParsedPrescriptionData);
+      const recNo = sample.split(",")[0] ?? "";
+      const fields = sample.split(",");
+      assertSampleMapped(
+        recNo,
+        fields,
+        res.data as import("../src/jahis-rx/types/parse.js").ParsedPrescriptionData,
+      );
     });
   }
 });
