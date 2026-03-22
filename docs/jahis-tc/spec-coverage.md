@@ -24,32 +24,32 @@
 
 ## レコード対応表
 
-| レコードNo | 名称                                   | ステータス          | Parse   | Normalize | Validate | Test     | 備考                                                                  |
-| ---------- | -------------------------------------- | ------------------- | ------- | --------- | -------- | -------- | --------------------------------------------------------------------- |
-| `JAHISTC*` | バージョンレコード                     | Supported           | Yes     | Yes       | Yes      | Yes      | `outputCategory` を保持。実装は `JAHISTC08` 固定ではなく2桁版を許容。 |
-| `1`        | 患者情報レコード                       | Supported           | Yes     | Yes       | Yes      | Yes      | 氏名、性別、生年月日、住所、電話、血液型、体重、カナ氏名を保持。      |
-| `2`        | 患者特記レコード                       | Supported           | Yes     | Yes       | Yes      | Yes      | 種別 `1/2/3/9` とレコード作成者を検証。                               |
-| `3`        | 要指導医薬品・一般用医薬品服用レコード | Supported           | Yes     | Yes       | Yes      | Yes      | 名称、開始日、終了日、作成者、通番、JAN コードを保持。                |
-| `31`       | 要指導医薬品・一般用医薬品成分レコード | Supported           | Yes     | Yes       | Yes      | Yes      | `3` の通番に紐付く成分情報として保持。                                |
-| `4`        | 手帳メモレコード                       | Supported           | Yes     | Yes       | Yes      | Yes      | メモ本文、入力日、作成者を保持。                                      |
-| `5`        | 調剤等年月日レコード                   | Supported           | Yes     | Yes       | Yes      | Yes      | 調剤ブロック開始として扱う。                                          |
-| `11`       | 調剤－医療機関等レコード               | Supported           | Yes     | Yes       | Yes      | Yes      | 出力区分 `1` では都道府県、点数表、コードを必須検証。                 |
-| `15`       | 調剤－医師・薬剤師レコード             | Supported           | Yes     | Yes       | Yes      | Yes      | 氏名、連絡先、作成者を保持。                                          |
-| `51`       | 処方－医療機関レコード                 | Supported           | Yes     | Yes       | Yes      | Yes      | 調剤ブロック内に薬品系レコードがある場合の必須条件を検証。            |
-| `55`       | 処方－医師レコード                     | Supported           | Yes     | Yes       | Yes      | Yes      | 複数医師レコードの繰り返しを保持可能。                                |
-| `201`      | 薬品レコード                           | Supported           | Yes     | Yes       | Yes      | Yes      | 一般名3項目まで保持。種別 `1/2`、条件付き必須、`X 12` 書式を validate。 |
-| `281`      | 薬品補足レコード                       | Supported           | Yes     | Yes       | Yes      | Yes      | 同一 RP に紐付け。                                                    |
-| `291`      | 薬品服用注意レコード                   | Supported           | Yes     | Yes       | Yes      | Yes      | 同一 RP に紐付け。                                                    |
-| `301`      | 用法レコード                           | Supported           | Yes     | Yes       | Yes      | Yes      | 用法名、数量、単位、剤形、用法コード種別/コードを保持。               |
-| `311`      | 用法補足レコード                       | Supported           | Yes     | Yes       | Yes      | Yes      | 対応する `301` が必要。                                               |
-| `391`      | 処方服用注意レコード                   | Supported           | Yes     | Yes       | Yes      | Yes      | 対応する RP の基底レコード有無を検証。                                |
-| `401`      | 服用注意レコード                       | Supported           | Yes     | Yes       | Yes      | Yes      | 調剤ブロック単位の注意情報として保持。                                |
-| `411`      | 医療機関等提供情報レコード             | Supported           | Yes     | Yes       | Yes      | Yes      | 提供情報種別 `30/31/99` を検証。                                      |
-| `421`      | 残薬確認レコード                       | Supported           | Yes     | Yes       | Yes      | Yes      | 調剤ブロック単位の残薬確認情報として保持。                            |
-| `501`      | 備考レコード                           | Supported           | Yes     | Yes       | Yes      | Yes      | 調剤ブロックの備考として保持。                                        |
-| `601`      | 患者等記入レコード                     | Supported           | Yes     | Yes       | Yes      | Yes      | 入力日も保持。                                                        |
-| `701`      | かかりつけ薬剤師レコード               | Supported           | Yes     | Yes       | Yes      | Yes      | 氏名、薬局名、連絡先、開始日、終了日を保持。                          |
-| `911`      | 分割制御レコード                       | Supported           | Yes     | Yes       | Yes      | Yes      | `dataId` 14桁、`partNumber <= totalParts` を検証。                    |
+| レコードNo | 名称                                   | ステータス | Parse | Normalize | Validate | Test | 備考                                                                    |
+| ---------- | -------------------------------------- | ---------- | ----- | --------- | -------- | ---- | ----------------------------------------------------------------------- |
+| `JAHISTC*` | バージョンレコード                     | Supported  | Yes   | Yes       | Yes      | Yes  | `outputCategory` を保持。実装は `JAHISTC08` 固定ではなく2桁版を許容。   |
+| `1`        | 患者情報レコード                       | Supported  | Yes   | Yes       | Yes      | Yes  | 氏名、性別、生年月日、住所、電話、血液型、体重、カナ氏名を保持。        |
+| `2`        | 患者特記レコード                       | Supported  | Yes   | Yes       | Yes      | Yes  | 種別 `1/2/3/9` とレコード作成者を検証。                                 |
+| `3`        | 要指導医薬品・一般用医薬品服用レコード | Supported  | Yes   | Yes       | Yes      | Yes  | 名称、開始日、終了日、作成者、通番、JAN コードを保持。                  |
+| `31`       | 要指導医薬品・一般用医薬品成分レコード | Supported  | Yes   | Yes       | Yes      | Yes  | `3` の通番に紐付く成分情報として保持。                                  |
+| `4`        | 手帳メモレコード                       | Supported  | Yes   | Yes       | Yes      | Yes  | メモ本文、入力日、作成者を保持。                                        |
+| `5`        | 調剤等年月日レコード                   | Supported  | Yes   | Yes       | Yes      | Yes  | 調剤ブロック開始として扱う。                                            |
+| `11`       | 調剤－医療機関等レコード               | Supported  | Yes   | Yes       | Yes      | Yes  | 出力区分 `1` では都道府県、点数表、コードを必須検証。                   |
+| `15`       | 調剤－医師・薬剤師レコード             | Supported  | Yes   | Yes       | Yes      | Yes  | 氏名、連絡先、作成者を保持。                                            |
+| `51`       | 処方－医療機関レコード                 | Supported  | Yes   | Yes       | Yes      | Yes  | 調剤ブロック内に薬品系レコードがある場合の必須条件を検証。              |
+| `55`       | 処方－医師レコード                     | Supported  | Yes   | Yes       | Yes      | Yes  | 複数医師レコードの繰り返しを保持可能。                                  |
+| `201`      | 薬品レコード                           | Supported  | Yes   | Yes       | Yes      | Yes  | 一般名3項目まで保持。種別 `1/2`、条件付き必須、`X 12` 書式を validate。 |
+| `281`      | 薬品補足レコード                       | Supported  | Yes   | Yes       | Yes      | Yes  | 同一 RP に紐付け。                                                      |
+| `291`      | 薬品服用注意レコード                   | Supported  | Yes   | Yes       | Yes      | Yes  | 同一 RP に紐付け。                                                      |
+| `301`      | 用法レコード                           | Supported  | Yes   | Yes       | Yes      | Yes  | 用法名、数量、単位、剤形、用法コード種別/コードを保持。                 |
+| `311`      | 用法補足レコード                       | Supported  | Yes   | Yes       | Yes      | Yes  | 対応する `301` が必要。                                                 |
+| `391`      | 処方服用注意レコード                   | Supported  | Yes   | Yes       | Yes      | Yes  | 対応する RP の基底レコード有無を検証。                                  |
+| `401`      | 服用注意レコード                       | Supported  | Yes   | Yes       | Yes      | Yes  | 調剤ブロック単位の注意情報として保持。                                  |
+| `411`      | 医療機関等提供情報レコード             | Supported  | Yes   | Yes       | Yes      | Yes  | 提供情報種別 `30/31/99` を検証。                                        |
+| `421`      | 残薬確認レコード                       | Supported  | Yes   | Yes       | Yes      | Yes  | 調剤ブロック単位の残薬確認情報として保持。                              |
+| `501`      | 備考レコード                           | Supported  | Yes   | Yes       | Yes      | Yes  | 調剤ブロックの備考として保持。                                          |
+| `601`      | 患者等記入レコード                     | Supported  | Yes   | Yes       | Yes      | Yes  | 入力日も保持。                                                          |
+| `701`      | かかりつけ薬剤師レコード               | Supported  | Yes   | Yes       | Yes      | Yes  | 氏名、薬局名、連絡先、開始日、終了日を保持。                            |
+| `911`      | 分割制御レコード                       | Supported  | Yes   | Yes       | Yes      | Yes  | `dataId` 14桁、`partNumber <= totalParts` を検証。                      |
 
 ## 検証ルール
 

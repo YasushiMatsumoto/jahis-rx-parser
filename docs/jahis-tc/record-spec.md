@@ -156,32 +156,32 @@
 以下は、Ver.2.6 の各種レコードレイアウトと付録1の出力例をもとに、現在の実装が直接確認している代表サンプルである。
 ここでは公式仕様の全文転記は避け、実装確認に使っている最小限の代表値だけを整理する。
 
-| Record | 代表サンプル | 実装で保持する主値 | 現在のテスト根拠 |
-| ------ | ------------ | ------------------ | ---------------- |
-| `JAHISTC*` | `JAHISTC08,1` | `version`, `outputCategory` | `test/parse-jahis-tc.test.ts` |
-| `1` | `1,山田 太郎,1,19800101,105-0004,...` | 氏名、性別、生年月日、郵便番号、住所、電話、緊急連絡先、血液型、体重、カナ氏名 | `test/parse-jahis-tc.test.ts` |
-| `2` | `2,1,アレルギー歴あり,1` | `patientRemarks[].remarkType/text/recordCreator` | `test/parse-jahis-tc.test.ts` |
-| `3` | `3,イブA錠,20260301,20260307,1,1,4987107609229` | OTC 名称、開始日、終了日、作成者、通番、JAN | `test/parse-jahis-tc.test.ts` |
-| `31` | `31,1,イブプロフェン,2,123456,1` | OTC 成分名、コード種別、コード、作成者 | `test/parse-jahis-tc.test.ts` |
-| `4` | `4,食後に体調を記録してください,20260310,1` | `notebookMemos[].text/inputDate/recordCreator` | `test/parse-jahis-tc.test.ts` |
-| `5` | `5,20260310,1` | 調剤日、作成者、調剤ブロック開始 | `test/parse-jahis-tc.test.ts` |
-| `11` | `11,株式会社 工業会薬局 駅前店,13,4,1234567,...` | 調剤側施設名、都道府県、点数表、コード、住所系 | `test/parse-jahis-tc.test.ts` |
-| `15` | `15,工業会 次郎,03-3506-8010,1` | 調剤担当者名、連絡先、作成者 | `test/parse-jahis-tc.test.ts` |
-| `51` | `51,医療法人 工業会病院,13,1,7654321,1` | 処方元施設名、都道府県、点数表、コード、作成者 | `test/parse-jahis-tc.test.ts` |
-| `55` | `55,工業会 太郎,内科,1` | 処方医氏名、診療科、作成者 | `test/parse-jahis-tc.test.ts` |
-| `201` | `201,1,ノルバスク錠２．５ｍｇ,1,錠,2,612170709,1,【般】アムロジピンベシル酸塩錠２．５ｍｇ,2,1179044F1ZZZ` | RP 番号、名称、用量、単位、薬品コード種別、薬品コード、作成者、一般名、一般名コード種別、一般名コード | `test/parse-jahis-tc.test.ts` |
-| `281` | `281,1,朝1錠、夕2錠,1` | `drugSupplements[].text/recordCreator` | `test/parse-jahis-tc.test.ts` |
-| `291` | `291,1,グレープフルーツジュースを避ける,1` | `drugCautions[].text/recordCreator` | `test/parse-jahis-tc.test.ts` |
-| `301` | `301,1,毎食後服用,3,日分,1,1,,1` | 用法名、調剤数量、調剤単位、剤形コード、用法コード種別、用法コード、作成者 | `test/parse-jahis-tc.test.ts` |
-| `311` | `311,1,透析日は休薬,1` | `usageSupplements[].text/recordCreator` | `test/parse-jahis-tc.test.ts` |
-| `391` | `391,1,眠気に注意,1` | `prescriptionCautions[].text/recordCreator` | `test/parse-jahis-tc.test.ts` |
-| `401` | `401,他の薬との併用に注意,1` | 調剤ブロック全体の注意情報 | `test/parse-jahis-tc.test.ts` |
-| `411` | `411,粉砕して交付,31,1` | 提供情報本文、提供情報種別、作成者 | `test/parse-jahis-tc.test.ts` |
-| `421` | `421,残薬は5錠,1` | 残薬確認本文、作成者 | `test/parse-jahis-tc.test.ts` |
-| `501` | `501,正しい飲み方は薬袋を参照,1` | 備考本文、作成者 | `test/parse-jahis-tc.test.ts` |
-| `601` | `601,昼に眠くなった,20260311` | 患者等記入本文、入力日 | `test/parse-jahis-tc.test.ts` |
-| `701` | `701,工業会 次郎,工業会薬局 駅前店,03-3506-8010,20260310,20270310,1` | 氏名、薬局名、連絡先、開始日、終了日、作成者 | `test/parse-jahis-tc.test.ts` |
-| `911` | `911,12345678901234,2,1` | `dataId`, `totalParts`, `partNumber` | `test/parse-jahis-tc.test.ts` |
+| Record     | 代表サンプル                                                                                              | 実装で保持する主値                                                                                    | 現在のテスト根拠              |
+| ---------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `JAHISTC*` | `JAHISTC08,1`                                                                                             | `version`, `outputCategory`                                                                           | `test/parse-jahis-tc.test.ts` |
+| `1`        | `1,山田 太郎,1,19800101,105-0004,...`                                                                     | 氏名、性別、生年月日、郵便番号、住所、電話、緊急連絡先、血液型、体重、カナ氏名                        | `test/parse-jahis-tc.test.ts` |
+| `2`        | `2,1,アレルギー歴あり,1`                                                                                  | `patientRemarks[].remarkType/text/recordCreator`                                                      | `test/parse-jahis-tc.test.ts` |
+| `3`        | `3,イブA錠,20260301,20260307,1,1,4987107609229`                                                           | OTC 名称、開始日、終了日、作成者、通番、JAN                                                           | `test/parse-jahis-tc.test.ts` |
+| `31`       | `31,1,イブプロフェン,2,123456,1`                                                                          | OTC 成分名、コード種別、コード、作成者                                                                | `test/parse-jahis-tc.test.ts` |
+| `4`        | `4,食後に体調を記録してください,20260310,1`                                                               | `notebookMemos[].text/inputDate/recordCreator`                                                        | `test/parse-jahis-tc.test.ts` |
+| `5`        | `5,20260310,1`                                                                                            | 調剤日、作成者、調剤ブロック開始                                                                      | `test/parse-jahis-tc.test.ts` |
+| `11`       | `11,株式会社 工業会薬局 駅前店,13,4,1234567,...`                                                          | 調剤側施設名、都道府県、点数表、コード、住所系                                                        | `test/parse-jahis-tc.test.ts` |
+| `15`       | `15,工業会 次郎,03-3506-8010,1`                                                                           | 調剤担当者名、連絡先、作成者                                                                          | `test/parse-jahis-tc.test.ts` |
+| `51`       | `51,医療法人 工業会病院,13,1,7654321,1`                                                                   | 処方元施設名、都道府県、点数表、コード、作成者                                                        | `test/parse-jahis-tc.test.ts` |
+| `55`       | `55,工業会 太郎,内科,1`                                                                                   | 処方医氏名、診療科、作成者                                                                            | `test/parse-jahis-tc.test.ts` |
+| `201`      | `201,1,ノルバスク錠２．５ｍｇ,1,錠,2,612170709,1,【般】アムロジピンベシル酸塩錠２．５ｍｇ,2,1179044F1ZZZ` | RP 番号、名称、用量、単位、薬品コード種別、薬品コード、作成者、一般名、一般名コード種別、一般名コード | `test/parse-jahis-tc.test.ts` |
+| `281`      | `281,1,朝1錠、夕2錠,1`                                                                                    | `drugSupplements[].text/recordCreator`                                                                | `test/parse-jahis-tc.test.ts` |
+| `291`      | `291,1,グレープフルーツジュースを避ける,1`                                                                | `drugCautions[].text/recordCreator`                                                                   | `test/parse-jahis-tc.test.ts` |
+| `301`      | `301,1,毎食後服用,3,日分,1,1,,1`                                                                          | 用法名、調剤数量、調剤単位、剤形コード、用法コード種別、用法コード、作成者                            | `test/parse-jahis-tc.test.ts` |
+| `311`      | `311,1,透析日は休薬,1`                                                                                    | `usageSupplements[].text/recordCreator`                                                               | `test/parse-jahis-tc.test.ts` |
+| `391`      | `391,1,眠気に注意,1`                                                                                      | `prescriptionCautions[].text/recordCreator`                                                           | `test/parse-jahis-tc.test.ts` |
+| `401`      | `401,他の薬との併用に注意,1`                                                                              | 調剤ブロック全体の注意情報                                                                            | `test/parse-jahis-tc.test.ts` |
+| `411`      | `411,粉砕して交付,31,1`                                                                                   | 提供情報本文、提供情報種別、作成者                                                                    | `test/parse-jahis-tc.test.ts` |
+| `421`      | `421,残薬は5錠,1`                                                                                         | 残薬確認本文、作成者                                                                                  | `test/parse-jahis-tc.test.ts` |
+| `501`      | `501,正しい飲み方は薬袋を参照,1`                                                                          | 備考本文、作成者                                                                                      | `test/parse-jahis-tc.test.ts` |
+| `601`      | `601,昼に眠くなった,20260311`                                                                             | 患者等記入本文、入力日                                                                                | `test/parse-jahis-tc.test.ts` |
+| `701`      | `701,工業会 次郎,工業会薬局 駅前店,03-3506-8010,20260310,20270310,1`                                      | 氏名、薬局名、連絡先、開始日、終了日、作成者                                                          | `test/parse-jahis-tc.test.ts` |
+| `911`      | `911,12345678901234,2,1`                                                                                  | `dataId`, `totalParts`, `partNumber`                                                                  | `test/parse-jahis-tc.test.ts` |
 
 運用メモ:
 

@@ -1,6 +1,6 @@
 {
   "name": "jahis-rx-parser",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "TypeScript parser library for JAHIS Rx and JAHIS TC decoded text",
   "keywords": [
     "jahis",

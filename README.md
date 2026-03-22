@@ -136,7 +136,7 @@ npm run check:publish
 バージョン更新後に Git tag を push し、GitHub Release を作成します。
 
 ```bash
-git tag v0.1.0
+git tag vX.Y.Z
 git push origin main --tags
 npm run release:github
 ```

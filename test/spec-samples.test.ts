@@ -324,9 +324,7 @@ const EXPECTED_ASSERTIONS: Array<
   [
     "211,1,1,250",
     (data) => {
-      expect(data.normalized.rps[0]?.drugs?.[0]?.unitConversions?.[0]?.convertedAmount).toBe(
-        "250",
-      );
+      expect(data.normalized.rps[0]?.drugs?.[0]?.unitConversions?.[0]?.convertedAmount).toBe("250");
     },
   ],
   [
@@ -424,7 +422,9 @@ const EXPECTED_ASSERTIONS: Array<
     "30,特－１２,１２３４５６７",
     (data) => {
       expect(data.normalized.insurance?.publicExpense?.special?.payerNumber).toBe("特－１２");
-      expect(data.normalized.insurance?.publicExpense?.special?.recipientNumber).toBe("１２３４５６７");
+      expect(data.normalized.insurance?.publicExpense?.special?.recipientNumber).toBe(
+        "１２３４５６７",
+      );
     },
   ],
   [

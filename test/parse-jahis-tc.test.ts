@@ -256,9 +256,9 @@ describe("parseJahisTc", () => {
     expect(normalized?.dispensings).toHaveLength(1);
     expect(normalized?.dispensings?.[0]?.prescriptions).toHaveLength(1);
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps).toHaveLength(1);
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.generalName).toBe(
-      "【般】アムロジピンベシル酸塩錠２．５ｍｇ",
-    );
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.generalName,
+    ).toBe("【般】アムロジピンベシル酸塩錠２．５ｍｇ");
     expect(normalized?.dispensings?.[0]?.overallCautions?.[0]?.text).toBe("他の薬との併用に注意");
     expect(normalized?.splitControl?.dataId).toBe("12345678901234");
     expect(normalized?.splitControl?.totalParts).toBe("3");
@@ -381,79 +381,96 @@ describe("parseJahisTc", () => {
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.name).toBe(
       "医療法人 工業会病院",
     );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.prefectureCode).toBe(
-      "13",
-    );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.scoreTableCode).toBe(
-      "1",
-    );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.institutionCode).toBe(
-      "7654321",
-    );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.recordCreator).toBe(
-      "1",
-    );
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.prefectureCode,
+    ).toBe("13");
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.scoreTableCode,
+    ).toBe("1");
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.institutionCode,
+    ).toBe("7654321");
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.recordCreator,
+    ).toBe("1");
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingDoctors).toHaveLength(1);
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingDoctors?.[0]?.name).toBe(
       "工業会 太郎",
     );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingDoctors?.[0]?.departmentName).toBe(
-      "内科",
-    );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingDoctors?.[0]?.recordCreator).toBe(
-      "1",
-    );
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingDoctors?.[0]?.departmentName,
+    ).toBe("内科");
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingDoctors?.[0]?.recordCreator,
+    ).toBe("1");
 
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps).toHaveLength(1);
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.rpNumber).toBe(1);
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageName).toBe("毎食後服用");
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.dispensingQuantity).toBe("3");
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageName).toBe(
+      "毎食後服用",
+    );
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.dispensingQuantity).toBe(
+      "3",
+    );
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.dispensingUnit).toBe("日分");
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.dosageFormCode).toBe("1");
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageCodeType).toBe("1");
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageCode).toBe("");
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageRecordCreator).toBe("1");
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageRecordCreator).toBe(
+      "1",
+    );
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs).toHaveLength(1);
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.name).toBe(
       "ノルバスク錠２．５ｍｇ",
     );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.amount).toBe("1");
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.unitName).toBe("錠");
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.drugCodeType).toBe(
-      "2",
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.amount).toBe(
+      "1",
     );
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.unitName).toBe(
+      "錠",
+    );
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.drugCodeType,
+    ).toBe("2");
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.drugCode).toBe(
       "612170709",
     );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.recordCreator).toBe(
-      "1",
-    );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.generalName).toBe(
-      "【般】アムロジピンベシル酸塩錠２．５ｍｇ",
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.recordCreator,
+    ).toBe("1");
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.generalName,
+    ).toBe("【般】アムロジピンベシル酸塩錠２．５ｍｇ");
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.generalNameCodeType,
+    ).toBe("2");
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.generalNameCode,
+    ).toBe("1179044F1ZZZ");
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugSupplements,
+    ).toHaveLength(1);
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugSupplements?.[0]?.text,
+    ).toBe("朝1錠、夕2錠");
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugCautions).toHaveLength(
+      1,
     );
     expect(
-      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]
-        ?.generalNameCodeType,
-    ).toBe("2");
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.generalNameCode).toBe(
-      "1179044F1ZZZ",
-    );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugSupplements).toHaveLength(1);
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugSupplements?.[0]?.text).toBe(
-      "朝1錠、夕2錠",
-    );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugCautions).toHaveLength(1);
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugCautions?.[0]?.text).toBe(
-      "グレープフルーツジュースを避ける",
-    );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageSupplements).toHaveLength(1);
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageSupplements?.[0]?.text).toBe(
-      "透析日は休薬",
-    );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.prescriptionCautions).toHaveLength(1);
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.prescriptionCautions?.[0]?.text).toBe(
-      "眠気に注意",
-    );
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugCautions?.[0]?.text,
+    ).toBe("グレープフルーツジュースを避ける");
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageSupplements,
+    ).toHaveLength(1);
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageSupplements?.[0]?.text,
+    ).toBe("透析日は休薬");
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.prescriptionCautions,
+    ).toHaveLength(1);
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.prescriptionCautions?.[0]?.text,
+    ).toBe("眠気に注意");
 
     expect(normalized?.dispensings?.[0]?.overallCautions).toHaveLength(1);
     expect(normalized?.dispensings?.[0]?.overallCautions?.[0]?.text).toBe("他の薬との併用に注意");
@@ -462,7 +479,9 @@ describe("parseJahisTc", () => {
     expect(normalized?.dispensings?.[0]?.providedInfos?.[0]?.infoType).toBe("31");
     expect(normalized?.dispensings?.[0]?.providedInfos?.[0]?.recordCreator).toBe("1");
     expect(normalized?.dispensings?.[0]?.remainingMedicineConfirmations).toHaveLength(1);
-    expect(normalized?.dispensings?.[0]?.remainingMedicineConfirmations?.[0]?.text).toBe("残薬は5錠");
+    expect(normalized?.dispensings?.[0]?.remainingMedicineConfirmations?.[0]?.text).toBe(
+      "残薬は5錠",
+    );
     expect(normalized?.dispensings?.[0]?.remarks).toHaveLength(1);
     expect(normalized?.dispensings?.[0]?.remarks?.[0]?.text).toBe("正しい飲み方は薬袋を参照");
     expect(normalized?.dispensings?.[0]?.patientEntries).toHaveLength(1);
@@ -537,9 +556,9 @@ describe("parseJahisTc", () => {
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.name).toBe(
       "医療法人 工業会病院",
     );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.recordCreator).toBe(
-      "1",
-    );
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.recordCreator,
+    ).toBe("1");
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps).toHaveLength(1);
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.rpNumber).toBe(1);
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageName).toBe(
@@ -548,9 +567,7 @@ describe("parseJahisTc", () => {
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.dispensingQuantity).toBe(
       "28",
     );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.dispensingUnit).toBe(
-      "日分",
-    );
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.dispensingUnit).toBe("日分");
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.dosageFormCode).toBe("1");
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageCodeType).toBe("1");
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageCode).toBe("");
@@ -561,10 +578,12 @@ describe("parseJahisTc", () => {
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.drugCode).toBe(
       "610421321",
     );
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugCautions).toHaveLength(1);
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugCautions?.[0]?.text).toBe(
-      "グレープフルーツジュースと一緒に飲まないでください。",
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugCautions).toHaveLength(
+      1,
     );
+    expect(
+      normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugCautions?.[0]?.text,
+    ).toBe("グレープフルーツジュースと一緒に飲まないでください。");
 
     expect(normalized?.dispensings?.[0]?.overallCautions).toHaveLength(1);
     expect(normalized?.dispensings?.[0]?.overallCautions?.[0]?.text).toBe(
@@ -605,7 +624,9 @@ describe("parseJahisTc", () => {
       "工業会 太郎",
     );
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps).toHaveLength(1);
-    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageName).toBe("毎食後服用");
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageName).toBe(
+      "毎食後服用",
+    );
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.name).toBe(
       "ノルバスク錠２．５ｍｇ",
     );
@@ -622,7 +643,9 @@ describe("parseJahisTc", () => {
       "中央 一郎",
     );
     expect(normalized?.dispensings?.[1]?.prescriptions?.[0]?.rps).toHaveLength(1);
-    expect(normalized?.dispensings?.[1]?.prescriptions?.[0]?.rps?.[0]?.usageName).toBe("朝夕食後服用");
+    expect(normalized?.dispensings?.[1]?.prescriptions?.[0]?.rps?.[0]?.usageName).toBe(
+      "朝夕食後服用",
+    );
     expect(normalized?.dispensings?.[1]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.name).toBe(
       "ロキソニン錠６０ｍｇ",
     );
