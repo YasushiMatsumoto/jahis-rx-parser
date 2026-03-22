@@ -99,6 +99,6 @@
 実装変更時は、以下を同時更新してください。
 
 1. `src/records/decode-record.ts` / `src/build/build-prescription.ts` の対応状況
-2. `README.md` のサマリー件数
-3. この `docs/spec-coverage.md` の対象行
+2. `README.md` の対応仕様・公開API・使用例の説明
+3. この `docs/jahis-rx/spec-coverage.md` の対象行
 4. `test/*.test.ts` に最低1つの根拠テスト
