@@ -8,6 +8,7 @@ import { JAHIS_TC_RECORD_NO } from "../constants/index.js";
 
 const RECORD_CREATOR_SET = new Set(["1", "2", "8", "9"]);
 const DRUG_CODE_TYPE_SET = new Set(["1", "2", "3", "4", "6"]);
+const GENERAL_NAME_CODE_TYPE_SET = new Set(["1", "2"]);
 const OTC_INGREDIENT_CODE_TYPE_SET = new Set(["1", "2"]);
 const PROVIDED_INFO_TYPE_SET = new Set(["30", "31", "99"]);
 const DISPENSING_SCORE_TABLE_CODE_SET = new Set(["1", "3", "4"]);
@@ -101,6 +102,15 @@ const isUsageCodeTypeLike = (value: string | undefined): boolean => {
   }
 
   return /^\d$/.test(value);
+};
+
+const isXTypeLike = (value: string | undefined, maxLength: number): boolean => {
+  if (!value) {
+    return false;
+  }
+
+  const pattern = new RegExp(`^[A-Za-z0-9.-]{1,${maxLength}}$`);
+  return pattern.test(value);
 };
 
 const isPrefectureCodeLike = (value: string | undefined): boolean => {
@@ -621,6 +631,70 @@ export const validateJahisTcRecords = (
             level,
             "INVALID_AMOUNT_FORMAT",
             "Record 201 amount format is invalid. Expected up to 6 integer and 5 fractional digits.",
+            record,
+          );
+        }
+
+        const hasGeneralName = hasText(record.fields[8]);
+        const hasGeneralNameCodeType = hasText(record.fields[9]);
+        const hasGeneralNameCode = hasText(record.fields[10]);
+
+        if (hasGeneralNameCode && !hasGeneralNameCodeType) {
+          pushIssue(
+            issues,
+            level,
+            "CONDITIONAL_REQUIRED_MISSING",
+            "Record 201 generalNameCodeType is required when generalNameCode is present.",
+            record,
+          );
+        }
+
+        if (hasGeneralNameCodeType && !isUsageCodeTypeLike(record.fields[9])) {
+          pushIssue(
+            issues,
+            level,
+            "INVALID_FORMAT",
+            `Record 201 generalNameCodeType must be a single digit but was ${record.fields[9]}.`,
+            record,
+          );
+        }
+
+        if (hasGeneralNameCodeType && !GENERAL_NAME_CODE_TYPE_SET.has(record.fields[9] ?? "")) {
+          pushIssue(
+            issues,
+            level,
+            "INVALID_ENUM_VALUE",
+            `Record 201 generalNameCodeType must be one of 1,2 but was ${record.fields[9]}.`,
+            record,
+          );
+        }
+
+        if (record.fields[9] === "2" && !hasGeneralNameCode) {
+          pushIssue(
+            issues,
+            level,
+            "CONDITIONAL_REQUIRED_MISSING",
+            "Record 201 generalNameCode is required when generalNameCodeType is 2.",
+            record,
+          );
+        }
+
+        if (record.fields[9] === "1" && hasGeneralNameCode) {
+          pushIssue(
+            issues,
+            level,
+            "INVALID_FORMAT",
+            "Record 201 generalNameCode must be omitted when generalNameCodeType is 1.",
+            record,
+          );
+        }
+
+        if (record.fields[9] === "2" && hasGeneralNameCode && !isXTypeLike(record.fields[10], 12)) {
+          pushIssue(
+            issues,
+            level,
+            "INVALID_FORMAT",
+            "Record 201 generalNameCode must be 1-12 ASCII alphanumeric characters, periods, or hyphens.",
             record,
           );
         }

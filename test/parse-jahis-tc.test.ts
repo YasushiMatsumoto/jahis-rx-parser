@@ -33,6 +33,173 @@ describe("parseJahisTc", () => {
     expect(result.issues.some((issue) => issue.code === "CONDITIONAL_REQUIRED_MISSING")).toBe(true);
   });
 
+  it("reports general-name consistency issues for record 201 in strict mode", () => {
+    const input = [
+      "JAHISTC08,1",
+      "1,山田 太郎,1,19800101",
+      "5,20260310,1",
+      "11,株式会社 工業会薬局 駅前店,13,4,1234567,,,03-3506-8010,1",
+      "51,医療法人 工業会病院,13,1,1234567,1",
+      "201,1,ノルバスク錠２．５ｍｇ,1,錠,2,612170709,1,【般】アムロジピンベシル酸塩錠２．５ｍｇ,,1179044F1ZZZ",
+      "301,1,毎食後服用,3,日分,1,1,,1",
+    ].join("\n");
+
+    const result = parseJahisTc(input, { strict: true });
+
+    expect(result.ok).toBe(false);
+    expect(result.data).toBeNull();
+    expect(
+      result.issues.some(
+        (issue) =>
+          issue.code === "CONDITIONAL_REQUIRED_MISSING" &&
+          issue.message.includes("generalNameCodeType is required"),
+      ),
+    ).toBe(true);
+  });
+
+  it("reports missing general-name code when record 201 code type is present", () => {
+    const input = [
+      "JAHISTC08,1",
+      "1,山田 太郎,1,19800101",
+      "5,20260310,1",
+      "11,株式会社 工業会薬局 駅前店,13,4,1234567,,,03-3506-8010,1",
+      "51,医療法人 工業会病院,13,1,1234567,1",
+      "201,1,ノルバスク錠２．５ｍｇ,1,錠,2,612170709,1,【般】アムロジピンベシル酸塩錠２．５ｍｇ,2,",
+      "301,1,毎食後服用,3,日分,1,1,,1",
+    ].join("\n");
+
+    const result = parseJahisTc(input, { strict: true });
+
+    expect(result.ok).toBe(false);
+    expect(result.data).toBeNull();
+    expect(
+      result.issues.some(
+        (issue) =>
+          issue.code === "CONDITIONAL_REQUIRED_MISSING" &&
+          issue.message.includes("generalNameCode is required"),
+      ),
+    ).toBe(true);
+  });
+
+  it("reports invalid general-name code type for record 201", () => {
+    const input = [
+      "JAHISTC08,1",
+      "1,山田 太郎,1,19800101",
+      "5,20260310,1",
+      "11,株式会社 工業会薬局 駅前店,13,4,1234567,,,03-3506-8010,1",
+      "51,医療法人 工業会病院,13,1,1234567,1",
+      "201,1,ノルバスク錠２．５ｍｇ,1,錠,2,612170709,1,【般】アムロジピンベシル酸塩錠２．５ｍｇ,7,1179044F1ZZZ",
+      "301,1,毎食後服用,3,日分,1,1,,1",
+    ].join("\n");
+
+    const result = parseJahisTc(input, { strict: true });
+
+    expect(result.ok).toBe(false);
+    expect(result.data).toBeNull();
+    expect(
+      result.issues.some(
+        (issue) => issue.code === "INVALID_ENUM_VALUE" && issue.message.includes("one of 1,2"),
+      ),
+    ).toBe(true);
+  });
+
+  it("reports invalid general-name code presence when record 201 code type is 1", () => {
+    const input = [
+      "JAHISTC08,1",
+      "1,山田 太郎,1,19800101",
+      "5,20260310,1",
+      "11,株式会社 工業会薬局 駅前店,13,4,1234567,,,03-3506-8010,1",
+      "51,医療法人 工業会病院,13,1,1234567,1",
+      "201,1,ノルバスク錠２．５ｍｇ,1,錠,2,612170709,1,【般】アムロジピンベシル酸塩錠２．５ｍｇ,1,1179044F1ZZZ",
+      "301,1,毎食後服用,3,日分,1,1,,1",
+    ].join("\n");
+
+    const result = parseJahisTc(input, { strict: true });
+
+    expect(result.ok).toBe(false);
+    expect(result.data).toBeNull();
+    expect(
+      result.issues.some(
+        (issue) =>
+          issue.code === "INVALID_FORMAT" &&
+          issue.message.includes("generalNameCode must be omitted when generalNameCodeType is 1"),
+      ),
+    ).toBe(true);
+  });
+
+  it("accepts record 201 without general-name code when generalNameCodeType is 1", () => {
+    const input = [
+      "JAHISTC08,1",
+      "1,山田 太郎,1,19800101",
+      "5,20260310,1",
+      "11,株式会社 工業会薬局 駅前店,13,4,1234567,,,03-3506-8010,1",
+      "51,医療法人 工業会病院,13,1,1234567,1",
+      "201,1,ノルバスク錠２．５ｍｇ,1,錠,2,612170709,1,【般】アムロジピンベシル酸塩錠２．５ｍｇ,1,",
+      "301,1,毎食後服用,3,日分,1,1,,1",
+    ].join("\n");
+
+    const result = parseJahisTc(input, { strict: true });
+
+    expect(result.ok).toBe(true);
+    expect(result.data).not.toBeNull();
+    expect(
+      result.data?.normalized.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]
+        ?.generalNameCodeType,
+    ).toBe("1");
+    expect(
+      result.data?.normalized.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]
+        ?.generalNameCode,
+    ).toBe("");
+  });
+
+  it("reports invalid general-name code format for record 201", () => {
+    const input = [
+      "JAHISTC08,1",
+      "1,山田 太郎,1,19800101",
+      "5,20260310,1",
+      "11,株式会社 工業会薬局 駅前店,13,4,1234567,,,03-3506-8010,1",
+      "51,医療法人 工業会病院,13,1,1234567,1",
+      "201,1,ノルバスク錠２．５ｍｇ,1,錠,2,612170709,1,【般】アムロジピンベシル酸塩錠２．５ｍｇ,2,1179044F1ZZ_",
+      "301,1,毎食後服用,3,日分,1,1,,1",
+    ].join("\n");
+
+    const result = parseJahisTc(input, { strict: true });
+
+    expect(result.ok).toBe(false);
+    expect(result.data).toBeNull();
+    expect(
+      result.issues.some(
+        (issue) =>
+          issue.code === "INVALID_FORMAT" &&
+          issue.message.includes("generalNameCode must be 1-12 ASCII alphanumeric characters"),
+      ),
+    ).toBe(true);
+  });
+
+  it("reports invalid general-name code length for record 201", () => {
+    const input = [
+      "JAHISTC08,1",
+      "1,山田 太郎,1,19800101",
+      "5,20260310,1",
+      "11,株式会社 工業会薬局 駅前店,13,4,1234567,,,03-3506-8010,1",
+      "51,医療法人 工業会病院,13,1,1234567,1",
+      "201,1,ノルバスク錠２．５ｍｇ,1,錠,2,612170709,1,【般】アムロジピンベシル酸塩錠２．５ｍｇ,2,1179044F1ZZZA",
+      "301,1,毎食後服用,3,日分,1,1,,1",
+    ].join("\n");
+
+    const result = parseJahisTc(input, { strict: true });
+
+    expect(result.ok).toBe(false);
+    expect(result.data).toBeNull();
+    expect(
+      result.issues.some(
+        (issue) =>
+          issue.code === "INVALID_FORMAT" &&
+          issue.message.includes("generalNameCode must be 1-12 ASCII alphanumeric characters"),
+      ),
+    ).toBe(true);
+  });
+
   it("reports invalid header when output category is missing", () => {
     const input = ["JAHISTC06", "1,山田 太郎,1,19800101", "5,20260310,1"].join("\n");
     const result = parseJahisTc(input, { strict: true });
@@ -75,6 +242,52 @@ describe("parseJahisTc", () => {
     expect(result.data?.normalized.splitControl?.dataId).toBe("12345678901234");
     expect(result.data?.normalized.splitControl?.totalParts).toBe("2");
     expect(result.data?.normalized.splitControl?.partNumber).toBe("1");
+  });
+
+  it("parses representative split output data and preserves split control metadata", () => {
+    const input = fixture("tc-split-output-part-2.txt");
+    const result = parseJahisTc(input, { strict: true });
+
+    expect(result.ok).toBe(true);
+    expect(result.data).not.toBeNull();
+
+    const normalized = result.data?.normalized;
+    expect(normalized?.version).toBe("JAHISTC08");
+    expect(normalized?.dispensings).toHaveLength(1);
+    expect(normalized?.dispensings?.[0]?.prescriptions).toHaveLength(1);
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps).toHaveLength(1);
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.generalName).toBe(
+      "【般】アムロジピンベシル酸塩錠２．５ｍｇ",
+    );
+    expect(normalized?.dispensings?.[0]?.overallCautions?.[0]?.text).toBe("他の薬との併用に注意");
+    expect(normalized?.splitControl?.dataId).toBe("12345678901234");
+    expect(normalized?.splitControl?.totalParts).toBe("3");
+    expect(normalized?.splitControl?.partNumber).toBe("2");
+  });
+
+  it("reports invalid split control when partNumber exceeds totalParts", () => {
+    const input = [
+      "JAHISTC08,1",
+      "1,山田 太郎,1,19800101",
+      "5,20260310,1",
+      "11,株式会社 工業会薬局 駅前店,13,4,1234567,,,03-3506-8010,1",
+      "51,医療法人 工業会病院,13,1,1234567,1",
+      "201,1,ノルバスク錠２．５ｍｇ,1,錠,2,612170709,1",
+      "301,1,毎食後服用,3,日分,1,1,,1",
+      "911,12345678901234,2,3",
+    ].join("\n");
+
+    const result = parseJahisTc(input, { strict: true });
+
+    expect(result.ok).toBe(false);
+    expect(result.data).toBeNull();
+    expect(
+      result.issues.some(
+        (issue) =>
+          issue.code === "INVALID_FORMAT" &&
+          issue.message.includes("partNumber must be less than or equal to totalParts"),
+      ),
+    ).toBe(true);
   });
 
   it("parses OTC ingredient record 31 and remaining medicine record 421", () => {
@@ -221,7 +434,7 @@ describe("parseJahisTc", () => {
     expect(
       normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]
         ?.generalNameCodeType,
-    ).toBe("1");
+    ).toBe("2");
     expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.generalNameCode).toBe(
       "1179044F1ZZZ",
     );
@@ -369,5 +582,51 @@ describe("parseJahisTc", () => {
     expect(normalized?.familyPharmacist?.startDate).toBe("");
     expect(normalized?.familyPharmacist?.endDate).toBe("");
     expect(normalized?.familyPharmacist?.recordCreator).toBe("1");
+  });
+
+  it("separates multiple dispensing blocks into independent normalized groups", () => {
+    const input = fixture("tc-multi-dispensing.txt");
+    const result = parseJahisTc(input, { strict: true });
+
+    expect(result.ok).toBe(true);
+    expect(result.data).not.toBeNull();
+
+    const normalized = result.data?.normalized;
+    expect(normalized?.dispensings).toHaveLength(2);
+
+    expect(normalized?.dispensings?.[0]?.date).toBe("20260312");
+    expect(normalized?.dispensings?.[0]?.institution?.name).toBe("株式会社 工業会薬局 本店");
+    expect(normalized?.dispensings?.[0]?.staff?.name).toBe("工業会 次郎");
+    expect(normalized?.dispensings?.[0]?.prescriptions).toHaveLength(1);
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingInstitution?.name).toBe(
+      "医療法人 工業会病院",
+    );
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.prescribingDoctors?.[0]?.name).toBe(
+      "工業会 太郎",
+    );
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps).toHaveLength(1);
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.usageName).toBe("毎食後服用");
+    expect(normalized?.dispensings?.[0]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.name).toBe(
+      "ノルバスク錠２．５ｍｇ",
+    );
+    expect(normalized?.dispensings?.[0]?.remarks?.[0]?.text).toBe("初回調剤ブロックの備考");
+
+    expect(normalized?.dispensings?.[1]?.date).toBe("20260220");
+    expect(normalized?.dispensings?.[1]?.institution?.name).toBe("株式会社 工業会薬局 南店");
+    expect(normalized?.dispensings?.[1]?.staff?.name).toBe("工業会 花子");
+    expect(normalized?.dispensings?.[1]?.prescriptions).toHaveLength(1);
+    expect(normalized?.dispensings?.[1]?.prescriptions?.[0]?.prescribingInstitution?.name).toBe(
+      "医療法人 中央病院",
+    );
+    expect(normalized?.dispensings?.[1]?.prescriptions?.[0]?.prescribingDoctors?.[0]?.name).toBe(
+      "中央 一郎",
+    );
+    expect(normalized?.dispensings?.[1]?.prescriptions?.[0]?.rps).toHaveLength(1);
+    expect(normalized?.dispensings?.[1]?.prescriptions?.[0]?.rps?.[0]?.usageName).toBe("朝夕食後服用");
+    expect(normalized?.dispensings?.[1]?.prescriptions?.[0]?.rps?.[0]?.drugs?.[0]?.name).toBe(
+      "ロキソニン錠６０ｍｇ",
+    );
+    expect(normalized?.dispensings?.[1]?.overallCautions?.[0]?.text).toBe("疼痛時の服用状況を確認");
+    expect(normalized?.dispensings?.[1]?.remarks?.[0]?.text).toBe("２回目調剤ブロックの備考");
   });
 });
