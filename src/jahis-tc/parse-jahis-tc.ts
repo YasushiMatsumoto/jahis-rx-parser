@@ -1,6 +1,6 @@
-import type { ParseIssue, ParseOptions, RawRecord } from "../jahis-rx/types/parse.js";
 import { parseRecord } from "../shared/records/parse-record.js";
 import { splitLines } from "../shared/tokenizer/split-lines.js";
+import type { ParseIssue, ParseOptions, RawRecord } from "../shared/types/parse.js";
 import { buildJahisTcNotebook } from "./build/build-jahis-tc-notebook.js";
 import { decodeJahisTcRecord } from "./records/decode-jahis-tc-record.js";
 import type { JahisTcParseResult } from "./types/jahis-tc-parse.js";

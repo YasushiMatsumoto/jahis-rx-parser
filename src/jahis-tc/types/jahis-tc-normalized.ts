@@ -97,6 +97,10 @@ export interface JahisTcDispensing {
     infoType?: string | undefined;
     recordCreator?: string | undefined;
   }>;
+  remainingMedicineConfirmations?: Array<{
+    text?: string | undefined;
+    recordCreator?: string | undefined;
+  }>;
   remarks?: Array<{
     text?: string | undefined;
     recordCreator?: string | undefined;
@@ -121,6 +125,14 @@ export interface JahisTcMedicationNotebook {
     startDate?: string | undefined;
     endDate?: string | undefined;
     recordCreator?: string | undefined;
+    sequence?: string | undefined;
+    janCode?: string | undefined;
+    ingredients?: Array<{
+      name?: string | undefined;
+      codeType?: string | undefined;
+      code?: string | undefined;
+      recordCreator?: string | undefined;
+    }>;
   }>;
   notebookMemos?: Array<{
     text?: string | undefined;

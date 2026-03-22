@@ -1,10 +1,57 @@
+import { RECORD_KIND } from "../constants/record-kind.js";
 import type {
   JahisTcDispensing,
   JahisTcMedicationNotebook,
   JahisTcPrescription,
   JahisTcRp,
 } from "../types/jahis-tc-normalized.js";
-import type { JahisTcRecord } from "../types/jahis-tc-records.js";
+import type {
+  JahisTcOtcMedicationIngredientRecord,
+  JahisTcOtcMedicationRecord,
+  JahisTcRecord,
+  JahisTcRemainingMedicineConfirmationRecord,
+} from "../types/jahis-tc-records.js";
+
+type JahisTcOtcMedication = NonNullable<JahisTcMedicationNotebook["otcMedications"]>[number];
+type JahisTcOtcIngredient = NonNullable<JahisTcOtcMedication["ingredients"]>[number];
+type JahisTcRemainingMedicineConfirmation = NonNullable<
+  JahisTcDispensing["remainingMedicineConfirmations"]
+>[number];
+
+const createOtcMedication = (record: JahisTcOtcMedicationRecord): JahisTcOtcMedication => {
+  return {
+    name: record.name,
+    startDate: record.startDate,
+    endDate: record.endDate,
+    recordCreator: record.recordCreator,
+    sequence: record.sequence,
+    janCode: record.janCode,
+  };
+};
+
+const getOtcIngredientSequence = (record: JahisTcOtcMedicationIngredientRecord): string => {
+  return record.otcMedicationSequence ?? "";
+};
+
+const createOtcIngredient = (
+  record: JahisTcOtcMedicationIngredientRecord,
+): JahisTcOtcIngredient => {
+  return {
+    name: record.ingredientName,
+    codeType: record.ingredientCodeType,
+    code: record.ingredientCode,
+    recordCreator: record.recordCreator,
+  };
+};
+
+const createRemainingMedicineConfirmation = (
+  record: JahisTcRemainingMedicineConfirmationRecord,
+): JahisTcRemainingMedicineConfirmation => {
+  return {
+    text: record.text,
+    recordCreator: record.recordCreator,
+  };
+};
 
 export const buildJahisTcNotebook = (
   records: JahisTcRecord[],
@@ -18,6 +65,7 @@ export const buildJahisTcNotebook = (
   let currentDispensing: JahisTcDispensing | undefined;
   let currentPrescription: JahisTcPrescription | undefined;
   const rpMap = new Map<number, JahisTcRp>();
+  const otcMedicationMap = new Map<string, JahisTcOtcMedication>();
 
   const ensureDispensing = (): JahisTcDispensing => {
     if (currentDispensing) {
@@ -61,12 +109,12 @@ export const buildJahisTcNotebook = (
 
   for (const record of records) {
     switch (record.kind) {
-      case "tc-header":
+      case RECORD_KIND.header:
         notebook.version = record.version;
         notebook.outputCategory = record.outputCategory;
         break;
 
-      case "tc-patient":
+      case RECORD_KIND.patient:
         notebook.patient = {
           name: record.name,
           sexCode: record.sexCode,
@@ -81,7 +129,7 @@ export const buildJahisTcNotebook = (
         };
         break;
 
-      case "tc-patient-remark":
+      case RECORD_KIND.patientRemark:
         notebook.patientRemarks ??= [];
         notebook.patientRemarks.push({
           remarkType: record.remarkType,
@@ -90,17 +138,38 @@ export const buildJahisTcNotebook = (
         });
         break;
 
-      case "tc-otc-medication":
+      case RECORD_KIND.otcMedication: {
         notebook.otcMedications ??= [];
-        notebook.otcMedications.push({
-          name: record.name,
-          startDate: record.startDate,
-          endDate: record.endDate,
-          recordCreator: record.recordCreator,
-        });
+        const medication = createOtcMedication(record);
+        notebook.otcMedications.push(medication);
+        if (medication.sequence) {
+          otcMedicationMap.set(medication.sequence, medication);
+        }
         break;
+      }
 
-      case "tc-notebook-memo":
+      case RECORD_KIND.otcMedicationIngredient: {
+        notebook.otcMedications ??= [];
+        const sequence = getOtcIngredientSequence(record);
+        let medication = otcMedicationMap.get(sequence);
+
+        if (!medication) {
+          medication = {
+            sequence: record.otcMedicationSequence,
+          };
+          notebook.otcMedications.push(medication);
+          if (sequence) {
+            otcMedicationMap.set(sequence, medication);
+          }
+        }
+
+        const ingredients = medication.ingredients ?? [];
+        medication.ingredients = ingredients;
+        ingredients.push(createOtcIngredient(record));
+        break;
+      }
+
+      case RECORD_KIND.notebookMemo:
         notebook.notebookMemos ??= [];
         notebook.notebookMemos.push({
           text: record.text,
@@ -109,21 +178,20 @@ export const buildJahisTcNotebook = (
         });
         break;
 
-      case "tc-dispensing-date":
-        {
-          const createdDispensing: JahisTcDispensing = {
-            date: record.date,
-            recordCreator: record.recordCreator,
-            prescriptions: [],
-          };
-          currentDispensing = createdDispensing;
-          notebook.dispensings.push(createdDispensing);
-        }
+      case RECORD_KIND.dispensingDate: {
+        const createdDispensing: JahisTcDispensing = {
+          date: record.date,
+          recordCreator: record.recordCreator,
+          prescriptions: [],
+        };
+        currentDispensing = createdDispensing;
+        notebook.dispensings.push(createdDispensing);
         currentPrescription = undefined;
         rpMap.clear();
         break;
+      }
 
-      case "tc-dispensing-institution": {
+      case RECORD_KIND.dispensingInstitution: {
         const dispensing = ensureDispensing();
         dispensing.institution = {
           name: record.name,
@@ -138,7 +206,7 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-dispensing-staff": {
+      case RECORD_KIND.dispensingStaff: {
         const dispensing = ensureDispensing();
         dispensing.staff = {
           name: record.name,
@@ -148,7 +216,7 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-prescribing-institution": {
+      case RECORD_KIND.prescribingInstitution: {
         const createdPrescription: JahisTcPrescription = {
           prescribingInstitution: {
             name: record.name,
@@ -160,13 +228,12 @@ export const buildJahisTcNotebook = (
           rps: [],
         };
         currentPrescription = createdPrescription;
-
         ensureDispensing().prescriptions.push(createdPrescription);
         rpMap.clear();
         break;
       }
 
-      case "tc-prescribing-doctor": {
+      case RECORD_KIND.prescribingDoctor: {
         const prescription = ensurePrescription();
         prescription.prescribingDoctors ??= [];
         prescription.prescribingDoctors.push({
@@ -177,7 +244,7 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-drug": {
+      case RECORD_KIND.drug: {
         const rp = ensureRp(record.rpNumber);
         rp.drugs.push({
           name: record.name,
@@ -190,7 +257,7 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-drug-supplement": {
+      case RECORD_KIND.drugSupplement: {
         const rp = ensureRp(record.rpNumber);
         rp.drugSupplements ??= [];
         rp.drugSupplements.push({
@@ -200,7 +267,7 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-drug-caution": {
+      case RECORD_KIND.drugCaution: {
         const rp = ensureRp(record.rpNumber);
         rp.drugCautions ??= [];
         rp.drugCautions.push({
@@ -210,7 +277,7 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-usage": {
+      case RECORD_KIND.usage: {
         const rp = ensureRp(record.rpNumber);
         rp.usageName = record.usageName;
         rp.dispensingQuantity = record.dispensingQuantity;
@@ -222,7 +289,7 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-usage-supplement": {
+      case RECORD_KIND.usageSupplement: {
         const rp = ensureRp(record.rpNumber);
         rp.usageSupplements ??= [];
         rp.usageSupplements.push({
@@ -232,7 +299,7 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-prescription-caution": {
+      case RECORD_KIND.prescriptionCaution: {
         const rp = ensureRp(record.rpNumber);
         rp.prescriptionCautions ??= [];
         rp.prescriptionCautions.push({
@@ -242,7 +309,7 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-overall-caution": {
+      case RECORD_KIND.overallCaution: {
         const dispensing = ensureDispensing();
         dispensing.overallCautions ??= [];
         dispensing.overallCautions.push({
@@ -252,7 +319,7 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-provided-info": {
+      case RECORD_KIND.providedInfo: {
         const dispensing = ensureDispensing();
         dispensing.providedInfos ??= [];
         dispensing.providedInfos.push({
@@ -263,7 +330,18 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-remark": {
+      case RECORD_KIND.remainingMedicineConfirmation: {
+        const dispensing = ensureDispensing();
+        const remainingMedicineConfirmations: JahisTcRemainingMedicineConfirmation[] =
+          Array.isArray(dispensing.remainingMedicineConfirmations)
+            ? dispensing.remainingMedicineConfirmations
+            : [];
+        dispensing.remainingMedicineConfirmations = remainingMedicineConfirmations;
+        remainingMedicineConfirmations.push(createRemainingMedicineConfirmation(record));
+        break;
+      }
+
+      case RECORD_KIND.remark: {
         const dispensing = ensureDispensing();
         dispensing.remarks ??= [];
         dispensing.remarks.push({
@@ -273,7 +351,7 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-patient-entry": {
+      case RECORD_KIND.patientEntry: {
         const dispensing = ensureDispensing();
         dispensing.patientEntries ??= [];
         dispensing.patientEntries.push({
@@ -283,7 +361,7 @@ export const buildJahisTcNotebook = (
         break;
       }
 
-      case "tc-family-pharmacist":
+      case RECORD_KIND.familyPharmacist:
         notebook.familyPharmacist = {
           name: record.name,
           pharmacyName: record.pharmacyName,
@@ -294,7 +372,7 @@ export const buildJahisTcNotebook = (
         };
         break;
 
-      case "tc-split-control":
+      case RECORD_KIND.splitControl:
         notebook.splitControl = {
           dataId: record.dataId,
           totalParts: record.totalParts,
@@ -302,7 +380,7 @@ export const buildJahisTcNotebook = (
         };
         break;
 
-      case "tc-unknown":
+      case RECORD_KIND.unknown:
         if (preserveUnknownRecords) {
           notebook.unknownRecords ??= [];
           notebook.unknownRecords.push({

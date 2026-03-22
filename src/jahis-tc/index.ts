@@ -1,3 +1,5 @@
+export type { JahisTcRecordNo, RecordKind } from "./constants/index.js";
+export { JAHIS_TC_RECORD_NO, RECORD_KIND } from "./constants/index.js";
 export { parseJahisTc } from "./parse-jahis-tc.js";
 export type {
   JahisTcDispensing,

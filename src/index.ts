@@ -17,6 +17,14 @@ export type {
   UnknownRxRecord,
 } from "./jahis-rx/types/index.js";
 export type {
+  RecordKind as JahisTcRecordKind,
+  JahisTcRecordNo,
+} from "./jahis-tc/constants/index.js";
+export {
+  RECORD_KIND as JAHIS_TC_RECORD_KIND,
+  JAHIS_TC_RECORD_NO,
+} from "./jahis-tc/constants/index.js";
+export type {
   JahisTcDispensing,
   JahisTcMedicationNotebook,
   JahisTcParsedData,

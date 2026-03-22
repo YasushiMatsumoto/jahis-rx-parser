@@ -1,5 +1,5 @@
-import type { RawRecord } from "../../jahis-rx/types/parse.js";
-import { JAHIS_TC_RECORD_NO } from "../constants/jahis-tc-record-no.js";
+import type { RawRecord } from "../../shared/types/parse.js";
+import { JAHIS_TC_RECORD_NO, RECORD_KIND } from "../constants/index.js";
 import type {
   JahisTcDispensingDateRecord,
   JahisTcDispensingInstitutionRecord,
@@ -7,6 +7,7 @@ import type {
   JahisTcDrugRecord,
   JahisTcFamilyPharmacistRecord,
   JahisTcNotebookMemoRecord,
+  JahisTcOtcMedicationIngredientRecord,
   JahisTcOtcMedicationRecord,
   JahisTcOverallCautionRecord,
   JahisTcPatientEntryRecord,
@@ -16,6 +17,7 @@ import type {
   JahisTcPrescribingInstitutionRecord,
   JahisTcProvidedInfoRecord,
   JahisTcRecord,
+  JahisTcRemainingMedicineConfirmationRecord,
   JahisTcRemarkRecord,
   JahisTcRpTextRecord,
   JahisTcSplitControlRecord,
@@ -35,7 +37,7 @@ const toInt = (value: string | undefined): number => {
 export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
   if (raw.recordNo.startsWith("JAHISTC")) {
     return {
-      kind: "tc-header",
+      kind: RECORD_KIND.header,
       line: raw.line,
       version: raw.recordNo,
       outputCategory: raw.fields[1],
@@ -46,7 +48,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
   switch (raw.recordNo) {
     case JAHIS_TC_RECORD_NO.patient: {
       const record: JahisTcPatientRecord = {
-        kind: "tc-patient",
+        kind: RECORD_KIND.patient,
         line: raw.line,
         raw,
         name: raw.fields[1],
@@ -66,7 +68,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.patientRemark: {
       const record: JahisTcPatientRemarkRecord = {
-        kind: "tc-patient-remark",
+        kind: RECORD_KIND.patientRemark,
         line: raw.line,
         raw,
         remarkType: raw.fields[1],
@@ -79,13 +81,30 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.otcMedication: {
       const record: JahisTcOtcMedicationRecord = {
-        kind: "tc-otc-medication",
+        kind: RECORD_KIND.otcMedication,
         line: raw.line,
         raw,
         name: raw.fields[1],
         startDate: raw.fields[2],
         endDate: raw.fields[3],
         recordCreator: raw.fields[4],
+        sequence: raw.fields[5],
+        janCode: raw.fields[6],
+      };
+
+      return record;
+    }
+
+    case JAHIS_TC_RECORD_NO.otcMedicationIngredient: {
+      const record: JahisTcOtcMedicationIngredientRecord = {
+        kind: RECORD_KIND.otcMedicationIngredient,
+        line: raw.line,
+        raw,
+        otcMedicationSequence: raw.fields[1],
+        ingredientName: raw.fields[2],
+        ingredientCodeType: raw.fields[3],
+        ingredientCode: raw.fields[4],
+        recordCreator: raw.fields[5],
       };
 
       return record;
@@ -93,7 +112,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.notebookMemo: {
       const record: JahisTcNotebookMemoRecord = {
-        kind: "tc-notebook-memo",
+        kind: RECORD_KIND.notebookMemo,
         line: raw.line,
         raw,
         text: raw.fields[1],
@@ -106,7 +125,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.dispensingDate: {
       const record: JahisTcDispensingDateRecord = {
-        kind: "tc-dispensing-date",
+        kind: RECORD_KIND.dispensingDate,
         line: raw.line,
         raw,
         date: raw.fields[1],
@@ -118,7 +137,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.dispensingInstitution: {
       const record: JahisTcDispensingInstitutionRecord = {
-        kind: "tc-dispensing-institution",
+        kind: RECORD_KIND.dispensingInstitution,
         line: raw.line,
         raw,
         name: raw.fields[1],
@@ -136,7 +155,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.dispensingStaff: {
       const record: JahisTcDispensingStaffRecord = {
-        kind: "tc-dispensing-staff",
+        kind: RECORD_KIND.dispensingStaff,
         line: raw.line,
         raw,
         name: raw.fields[1],
@@ -149,7 +168,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.prescribingInstitution: {
       const record: JahisTcPrescribingInstitutionRecord = {
-        kind: "tc-prescribing-institution",
+        kind: RECORD_KIND.prescribingInstitution,
         line: raw.line,
         raw,
         name: raw.fields[1],
@@ -164,7 +183,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.prescribingDoctor: {
       const record: JahisTcPrescribingDoctorRecord = {
-        kind: "tc-prescribing-doctor",
+        kind: RECORD_KIND.prescribingDoctor,
         line: raw.line,
         raw,
         name: raw.fields[1],
@@ -177,7 +196,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.drug: {
       const record: JahisTcDrugRecord = {
-        kind: "tc-drug",
+        kind: RECORD_KIND.drug,
         line: raw.line,
         raw,
         rpNumber: toInt(raw.fields[1]),
@@ -197,12 +216,12 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
     case JAHIS_TC_RECORD_NO.usageSupplement:
     case JAHIS_TC_RECORD_NO.prescriptionCaution: {
       const kindByRecordNo: Record<string, JahisTcRpTextRecord["kind"]> = {
-        [JAHIS_TC_RECORD_NO.drugSupplement]: "tc-drug-supplement",
-        [JAHIS_TC_RECORD_NO.drugCaution]: "tc-drug-caution",
-        [JAHIS_TC_RECORD_NO.usageSupplement]: "tc-usage-supplement",
-        [JAHIS_TC_RECORD_NO.prescriptionCaution]: "tc-prescription-caution",
+        [JAHIS_TC_RECORD_NO.drugSupplement]: RECORD_KIND.drugSupplement,
+        [JAHIS_TC_RECORD_NO.drugCaution]: RECORD_KIND.drugCaution,
+        [JAHIS_TC_RECORD_NO.usageSupplement]: RECORD_KIND.usageSupplement,
+        [JAHIS_TC_RECORD_NO.prescriptionCaution]: RECORD_KIND.prescriptionCaution,
       };
-      const kind = kindByRecordNo[raw.recordNo] ?? "tc-drug-supplement";
+      const kind = kindByRecordNo[raw.recordNo] ?? RECORD_KIND.drugSupplement;
 
       const record: JahisTcRpTextRecord = {
         kind,
@@ -218,7 +237,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.usage: {
       const record: JahisTcUsageRecord = {
-        kind: "tc-usage",
+        kind: RECORD_KIND.usage,
         line: raw.line,
         raw,
         rpNumber: toInt(raw.fields[1]),
@@ -236,7 +255,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.overallCaution: {
       const record: JahisTcOverallCautionRecord = {
-        kind: "tc-overall-caution",
+        kind: RECORD_KIND.overallCaution,
         line: raw.line,
         raw,
         text: raw.fields[1],
@@ -248,7 +267,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.remark: {
       const record: JahisTcRemarkRecord = {
-        kind: "tc-remark",
+        kind: RECORD_KIND.remark,
         line: raw.line,
         raw,
         text: raw.fields[1],
@@ -260,7 +279,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.providedInfo: {
       const record: JahisTcProvidedInfoRecord = {
-        kind: "tc-provided-info",
+        kind: RECORD_KIND.providedInfo,
         line: raw.line,
         raw,
         text: raw.fields[1],
@@ -271,9 +290,21 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
       return record;
     }
 
+    case JAHIS_TC_RECORD_NO.remainingMedicineConfirmation: {
+      const record: JahisTcRemainingMedicineConfirmationRecord = {
+        kind: RECORD_KIND.remainingMedicineConfirmation,
+        line: raw.line,
+        raw,
+        text: raw.fields[1],
+        recordCreator: raw.fields[2],
+      };
+
+      return record;
+    }
+
     case JAHIS_TC_RECORD_NO.patientEntry: {
       const record: JahisTcPatientEntryRecord = {
-        kind: "tc-patient-entry",
+        kind: RECORD_KIND.patientEntry,
         line: raw.line,
         raw,
         text: raw.fields[1],
@@ -285,7 +316,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.familyPharmacist: {
       const record: JahisTcFamilyPharmacistRecord = {
-        kind: "tc-family-pharmacist",
+        kind: RECORD_KIND.familyPharmacist,
         line: raw.line,
         raw,
         name: raw.fields[1],
@@ -301,7 +332,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     case JAHIS_TC_RECORD_NO.splitControl: {
       const record: JahisTcSplitControlRecord = {
-        kind: "tc-split-control",
+        kind: RECORD_KIND.splitControl,
         line: raw.line,
         raw,
         dataId: raw.fields[1],
@@ -314,7 +345,7 @@ export const decodeJahisTcRecord = (raw: RawRecord): JahisTcRecord => {
 
     default: {
       const record: JahisTcUnknownRecord = {
-        kind: "tc-unknown",
+        kind: RECORD_KIND.unknown,
         line: raw.line,
         recordNo: raw.recordNo,
         raw,

@@ -76,4 +76,31 @@ describe("parseJahisTc", () => {
     expect(result.data?.normalized.splitControl?.totalParts).toBe("2");
     expect(result.data?.normalized.splitControl?.partNumber).toBe("1");
   });
+
+  it("parses OTC ingredient record 31 and remaining medicine record 421", () => {
+    const input = fixture("tc-with-otc-components-and-remaining-medicine.txt");
+    const result = parseJahisTc(input, { strict: true });
+
+    expect(result.ok).toBe(true);
+    expect(result.data?.normalized.otcMedications).toHaveLength(1);
+    expect(result.data?.normalized.otcMedications?.[0]?.sequence).toBe("1");
+    expect(result.data?.normalized.otcMedications?.[0]?.janCode).toBe("4987107609229");
+    expect(result.data?.normalized.otcMedications?.[0]?.ingredients).toHaveLength(2);
+    expect(result.data?.normalized.otcMedications?.[0]?.ingredients?.[0]?.name).toBe(
+      "イブプロフェン",
+    );
+    expect(result.data?.normalized.dispensings[0]?.remainingMedicineConfirmations).toHaveLength(1);
+    expect(
+      result.data?.normalized.dispensings[0]?.remainingMedicineConfirmations?.[0]?.text,
+    ).toContain("ロキソプロフェンが10錠残薬");
+  });
+
+  it("reports missing OTC parent record when record 31 has no record 3 sequence", () => {
+    const input = fixture("tc-invalid-missing-otc-sequence-parent.txt");
+    const result = parseJahisTc(input, { strict: true });
+
+    expect(result.ok).toBe(false);
+    expect(result.data).toBeNull();
+    expect(result.issues.some((issue) => issue.code === "MISSING_REFERENCED_RECORD")).toBe(true);
+  });
 });

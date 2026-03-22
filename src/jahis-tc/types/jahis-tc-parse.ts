@@ -1,4 +1,4 @@
-import type { ParseIssue, ParseOptions, RawRecord } from "../../jahis-rx/types/parse.js";
+import type { ParseIssue, ParseOptions, RawRecord } from "../../shared/types/parse.js";
 import type { JahisTcMedicationNotebook } from "./jahis-tc-normalized.js";
 
 export interface JahisTcParsedData {

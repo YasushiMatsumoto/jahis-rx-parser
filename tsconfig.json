@@ -16,6 +16,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "rootDir": ".",
+    "outDir": "dist/tsc",
     "types": ["node", "vitest/globals"]
   },
   "include": ["src", "test", "vitest.config.ts"]

@@ -3,11 +3,12 @@ import type {
   ParseIssueLevel,
   ParseOptions,
   RawRecord,
-} from "../../jahis-rx/types/parse.js";
-import { JAHIS_TC_RECORD_NO } from "../constants/jahis-tc-record-no.js";
+} from "../../shared/types/parse.js";
+import { JAHIS_TC_RECORD_NO } from "../constants/index.js";
 
 const RECORD_CREATOR_SET = new Set(["1", "2", "8", "9"]);
 const DRUG_CODE_TYPE_SET = new Set(["1", "2", "3", "4", "6"]);
+const OTC_INGREDIENT_CODE_TYPE_SET = new Set(["1", "2"]);
 const PROVIDED_INFO_TYPE_SET = new Set(["30", "31", "99"]);
 const DISPENSING_SCORE_TABLE_CODE_SET = new Set(["1", "3", "4"]);
 const PRESCRIBING_SCORE_TABLE_CODE_SET = new Set(["1", "3"]);
@@ -273,6 +274,7 @@ export const validateJahisTcRecords = (
 
   const dispensingStates: DispensingState[] = [];
   let currentDispensing: DispensingState | undefined;
+  const otcMedicationSequences = new Set<string>();
 
   const ensureDispensingForRecord = (record: RawRecord): DispensingState => {
     if (currentDispensing) {
@@ -366,6 +368,69 @@ export const validateJahisTcRecords = (
         validateRecordCreator(issues, level, record, 4);
         validateDateField(issues, level, record, 2, "startDate");
         validateDateField(issues, level, record, 3, "endDate");
+        if (hasText(record.fields[5])) {
+          if (!isDigits(record.fields[5], 1, 3)) {
+            pushIssue(
+              issues,
+              level,
+              "INVALID_FORMAT",
+              "Record 3 otcMedicationSequence must be 1-3 digit number.",
+              record,
+            );
+          } else {
+            otcMedicationSequences.add(record.fields[5] ?? "");
+          }
+        }
+        if (hasText(record.fields[6]) && !isDigits(record.fields[6], 13, 13)) {
+          pushIssue(issues, level, "INVALID_FORMAT", "Record 3 janCode must be 13 digits.", record);
+        }
+        break;
+
+      case JAHIS_TC_RECORD_NO.otcMedicationIngredient:
+        requireField(issues, level, record, 1, "otcMedicationSequence");
+        requireField(issues, level, record, 2, "ingredientName");
+        requireField(issues, level, record, 3, "ingredientCodeType");
+        requireField(issues, level, record, 5, "recordCreator");
+        validateRecordCreator(issues, level, record, 5);
+        if (hasText(record.fields[1]) && !isDigits(record.fields[1], 1, 3)) {
+          pushIssue(
+            issues,
+            level,
+            "INVALID_FORMAT",
+            "Record 31 otcMedicationSequence must be 1-3 digit number.",
+            record,
+          );
+        }
+        if (
+          hasNonEmptyText(record.fields[3]) &&
+          !OTC_INGREDIENT_CODE_TYPE_SET.has(record.fields[3])
+        ) {
+          pushIssue(
+            issues,
+            level,
+            "INVALID_ENUM_VALUE",
+            `Record 31 ingredientCodeType must be one of 1,2 but was ${record.fields[3]}.`,
+            record,
+          );
+        }
+        if (hasText(record.fields[3]) && record.fields[3] !== "1" && !hasText(record.fields[4])) {
+          pushIssue(
+            issues,
+            level,
+            "CONDITIONAL_REQUIRED_MISSING",
+            "Record 31 ingredientCode is required when ingredientCodeType is not 1.",
+            record,
+          );
+        }
+        if (hasNonEmptyText(record.fields[1]) && !otcMedicationSequences.has(record.fields[1])) {
+          pushIssue(
+            issues,
+            level,
+            "MISSING_REFERENCED_RECORD",
+            `Record 31 references OTC sequence ${record.fields[1]} without corresponding record 3.`,
+            record,
+          );
+        }
         break;
 
       case JAHIS_TC_RECORD_NO.notebookMemo:
@@ -732,6 +797,13 @@ export const validateJahisTcRecords = (
             record,
           );
         }
+        break;
+
+      case JAHIS_TC_RECORD_NO.remainingMedicineConfirmation:
+        currentDispensing = ensureDispensingForRecord(record);
+        requireField(issues, level, record, 1, "remainingMedicineText");
+        requireField(issues, level, record, 2, "recordCreator");
+        validateRecordCreator(issues, level, record, 2);
         break;
 
       case JAHIS_TC_RECORD_NO.remark:
