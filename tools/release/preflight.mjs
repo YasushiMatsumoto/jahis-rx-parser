@@ -49,10 +49,4 @@ try {
   fail("GitHub CLI の認証状態を確認できません。`gh auth login` を実行してください。");
 }
 
-try {
-  run("npm", ["whoami"]);
-} catch {
-  fail("npm にログインしていません。`npm login` を実行してください。");
-}
-
 console.log(`preflight: OK (version ${version})`);

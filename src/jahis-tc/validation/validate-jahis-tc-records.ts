@@ -635,7 +635,6 @@ export const validateJahisTcRecords = (
           );
         }
 
-        const hasGeneralName = hasText(record.fields[8]);
         const hasGeneralNameCodeType = hasText(record.fields[9]);
         const hasGeneralNameCode = hasText(record.fields[10]);
 
