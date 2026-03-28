@@ -111,4 +111,3 @@ const result = parseJahisTc(input, { strict: true });
 
 - JAHIS院外処方箋2次元シンボル記録条件規約 Ver.1.10
 - JAHIS電子版お薬手帳データフォーマット仕様書 Ver.2.6
-
