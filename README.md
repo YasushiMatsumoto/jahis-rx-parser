@@ -2,11 +2,11 @@
 
 ## 概要
 
-JAHISのデコード済みテキストを解析し、JSONへ変換するTypeScriptライブラリです。
+JAHISの処方箋バーコードを解析し、JSONへ変換するTypeScriptライブラリです。
 
 以下の2つの仕様に対応しています。
 
-- JAHIS院外処方箋 ２次元バーコード (`JAHIS Rx`)
+- JAHIS院外処方箋２次元バーコード (`JAHIS Rx`)
 - JAHIS電子版お薬手帳データ (`JAHIS TC`)
 
 対象外:
@@ -31,10 +31,10 @@ npm install jahis-rx-parser
 
 ## 公開API
 
-- `parseJahisRx(input, options)`: JAHIS Rx を解析します
-- `parseJahisTc(input, options)`: JAHIS TC を解析します
-- `isJahisRx(input)`: データが JAHIS Rx として開始しているかを判定します
-- `isJahisTc(input)`: データが JAHIS TC として開始しているかを判定します
+- `parseJahisRx(input, options)`: JAHIS院外処方箋２次元バーコードのデコード済テキストを解析します
+- `parseJahisTc(input, options)`: JAHIS電子版お薬手帳データのデコード済テキストを解析します
+- `isJahisRx(input)`: データがJAHIS院外処方箋２次元バーコードとして開始しているかを判定します
+- `isJahisTc(input)`: データがJAHIS電子版お薬手帳データとして開始しているかを判定します
 
 ## 使用方法
 
@@ -112,33 +112,3 @@ const result = parseJahisTc(input, { strict: true });
 - JAHIS院外処方箋2次元シンボル記録条件規約 Ver.1.10
 - JAHIS電子版お薬手帳データフォーマット仕様書 Ver.2.6
 
-## 開発時の確認コマンド
-
-```bash
-npm run check
-```
-
-公開前と同等のフル確認:
-
-```bash
-npm run check:publish
-```
-
-## 公開フロー
-
-ローカルで公開前チェックを通します。
-
-```bash
-npm run release:preflight
-npm run check:publish
-```
-
-バージョン更新後に Git tag を push し、GitHub Release を作成します。
-
-```bash
-git tag vX.Y.Z
-git push origin main --tags
-npm run release:github
-```
-
-GitHub Release 公開後は GitHub Actions の npm publish workflow から npm 公開を自動実行できる構成です。
